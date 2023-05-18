@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { styled } from "@mui/material/styles";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
-import { Link } from "react-router-dom";
+import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import { Link, useNavigate } from "react-router-dom";
 
 const Container = styled("form")({
   padding: "32px",
@@ -33,7 +34,7 @@ const Header = styled("h2")({
 
 const LinkContainer = styled("div")({
   display: "flex",
-  justifyContent: "flex-end",
+  justifyContent: "space-between", // Align the links to the left and right
   marginBottom: "16px",
 });
 
@@ -41,6 +42,8 @@ const StyledLink = styled(Link)({
   color: "#4a32a8",
   textDecoration: "none",
   fontWeight: "bold",
+  display: "flex",
+  alignItems: "center",
 });
 
 const NumberContainer = styled("div")({
@@ -48,8 +51,7 @@ const NumberContainer = styled("div")({
   justifyContent: "center",
 });
 
-const NumberBox = styled("div")({
-  display: "inline-block",
+const NumberBox = styled("input")({
   border: "2px solid #4a32a8",
   borderRadius: "8px",
   width: "50px",
@@ -61,28 +63,32 @@ const NumberBox = styled("div")({
   margin: "0 8px",
 });
 
-const CodeInput = styled("input")({
-  width: "1px",
-  height: "1px",
-  padding: "0",
-  margin: "-1px",
-  border: "none",
-  clip: "rect(0 0 0 0)",
-  overflow: "hidden",
-  whiteSpace: "nowrap",
+const StyledArrowBackIcon = styled(ArrowBackIosIcon)({
+  marginRight: "8px",
 });
 
 function CodeVerification() {
   const [code, setCode] = useState("");
+  const navigate = useNavigate();
 
-  const handleCodeChange = (event) => {
-    const value = event.target.value;
-    setCode(value);
+  const handleCodeChange = (event, index) => {
+    let value = event.target.value;
+    value = value.replace(/\D/g, ""); // Remove non-numeric characters
+    setCode((prevCode) => {
+      const newCode = [...prevCode];
+      newCode[index] = value[value.length - 1]; // Store the last character
+      return newCode;
+    });
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    navigate("/sign-in");
     alert("Submitted");
+  };
+
+  const resendCodeHandler = () => {
+    alert("resendCodeHandler");
   };
 
   return (
@@ -94,19 +100,23 @@ function CodeVerification() {
     >
       <Container onSubmit={handleSubmit}>
         <LinkContainer>
-          <StyledLink to={"/sign-in"}>Back to Sign In</StyledLink>
+          <StyledLink to={"/forget-password"}>
+            <StyledArrowBackIcon />
+            Go Back
+          </StyledLink>
+          <StyledLink onClick={resendCodeHandler}>Resend Code</StyledLink>
         </LinkContainer>
         <Header>Enter Code</Header>
         <NumberContainer>
-          {[1, 2, 3, 4, 5].map((num) => (
-            <NumberBox key={num}>{code[num - 1]}</NumberBox>
+          {[1, 2, 3, 4, 5].map((num, index) => (
+            <NumberBox
+              key={num}
+              type="text" // Change type to "text"
+              value={code[index]}
+              onChange={(event) => handleCodeChange(event, index)}
+              maxLength="1"
+            />
           ))}
-          <CodeInput
-            type="text"
-            value={code}
-            onChange={handleCodeChange}
-            maxLength="5"
-          />
         </NumberContainer>
         <StyledButton
           variant="contained"

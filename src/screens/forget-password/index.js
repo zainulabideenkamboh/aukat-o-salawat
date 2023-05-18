@@ -5,7 +5,7 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import EmailIcon from "@mui/icons-material/Email";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Container = styled("form")({
   padding: "32px",
@@ -45,7 +45,7 @@ const Header = styled("h2")({
 
 const LinkContainer = styled("div")({
   display: "flex",
-  justifyContent: "flex-end",
+  justifyContent: "flex-start", // Align the button to the left
   marginBottom: "16px",
 });
 
@@ -64,6 +64,7 @@ const StyledArrowBackIcon = styled(ArrowBackIosIcon)({
 function ForgetPassword() {
   const [email, setEmail] = useState("");
   const [isValid, setIsValid] = useState(false);
+  const navigate = useNavigate();
 
   const handleEmailChange = (event) => {
     const value = event.target.value;
@@ -73,7 +74,9 @@ function ForgetPassword() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    alert("Submitted");
+    navigate("/code-verification");
+
+    // alert("Submitted");
   };
 
   const validateEmail = (email) => {
@@ -83,7 +86,7 @@ function ForgetPassword() {
 
   return (
     <Grid
-      containerx
+      container
       justifyContent="center"
       alignItems="center"
       style={{ height: "100vh" }}
@@ -95,7 +98,7 @@ function ForgetPassword() {
             Go Back
           </StyledLink>
         </LinkContainer>
-        <Header>Forgot Password</Header>
+        <Header>Forget Password</Header>
         <StyledTextField
           label="Email"
           value={email}
