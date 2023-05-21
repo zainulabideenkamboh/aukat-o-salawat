@@ -16,6 +16,7 @@ import { useEffect } from "react";
 import moment from "moment-timezone";
 import axios from "axios";
 import Configurations from "./screens/configurations";
+import NamazTiming from "./screens/namaz-timing";
 
 function App() {
   useEffect(() => {
@@ -48,6 +49,7 @@ function App() {
         <Route path="/generate-code" element={<GenerateCode />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/configurations" element={<Configurations />} />
+        <Route path="/namaz-timing" element={<NamazTiming />} />
         {/* <Route path="/logout" element={<Configurations />} /> */}
       </Routes>
     </BrowserRouter>

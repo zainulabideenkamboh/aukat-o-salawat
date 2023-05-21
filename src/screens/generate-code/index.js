@@ -91,15 +91,11 @@ function GenerateCode() {
   };
 
   const resendVerificationCodeHandler = async () => {
-    console.log("resendVerificationCodeHandler x");
     const email = localStorage.getItem("email");
     try {
       const response = await ApiClient.post("/api/v1/otp/alexa/generate", {
         email,
       });
-
-      console.log("Generate OTP Response : ", response.data);
-
       if (response.status !== 200) {
         handleToasterOpen("error", "An error occurred while generating OTP.");
       }

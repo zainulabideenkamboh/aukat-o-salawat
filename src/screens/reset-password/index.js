@@ -90,8 +90,6 @@ function ResetPassword() {
   };
 
   const isValidPassword = (password) => {
-    console.log("Checking if password is valid:", password);
-
     // Password must be at least 8 characters long
     if (password.length < 8) {
       return false;

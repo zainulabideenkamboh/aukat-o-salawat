@@ -13,6 +13,7 @@ import {
   Tune as TuneIcon,
   ExitToApp as ExitToAppIcon,
 } from "@mui/icons-material";
+import MosqueIcon from "@mui/icons-material/Mosque";
 
 const SidebarContainer = styled("aside")(({ isOpen }) => ({
   width: "250px",
@@ -51,6 +52,12 @@ const Sidebar = ({ isOpen }) => {
             <MusicNoteIcon />
           </ListItemIcon>
           <ListItemText primary="Audio List" />
+        </ListItem>
+        <ListItem button component={Link} to="/namaz-timing">
+          <ListItemIcon>
+            <MosqueIcon />
+          </ListItemIcon>
+          <ListItemText primary="Namaz Timing" />
         </ListItem>
         <ListItem button component={Link} to="/favorite">
           <ListItemIcon>

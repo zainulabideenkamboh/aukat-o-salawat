@@ -18,7 +18,7 @@ import Layout from "../../components/Layout";
 import { PlayCircleFilled, PauseCircleFilled } from "@mui/icons-material";
 
 const spotifyApi = new SpotifyWebApi();
-const clientId = "572f6a344bdf496c88feda074ea76850"; // Replace with your own client ID
+const clientId = process.env.REACT_APP_CLIENT_ID;
 
 function AudioList() {
   const [currentSong, setCurrentSong] = useState(null);
@@ -31,7 +31,6 @@ function AudioList() {
     const hashParams = new URLSearchParams(window.location.hash.substring(1));
     const accessToken = hashParams.get("access_token");
     if (accessToken) {
-      console.log("accessToken: ", accessToken);
       spotifyApi.setAccessToken(accessToken);
       // Use the Spotify Web API to get the current user's playlists
       spotifyApi.getUserPlaylists().then((data) => {
@@ -93,8 +92,13 @@ function AudioList() {
         height="100vh"
         display="flex"
         flexDirection="column"
-        sx={{ marginBottom: "30%" }}
+        sx={{ marginBottom: "30%", marginRight: "100px" }}
       >
+        <Typography sx={{ m: 3 }} variant="h4">
+          {" "}
+          Spotify Playlist
+        </Typography>
+
         {currentSong && (
           <Box p={2} display="flex" alignItems="center">
             <Box

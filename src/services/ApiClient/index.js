@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = "https://565d-111-88-220-29.ngrok-free.app/";
+const API_BASE_URL = process.env.REACT_APP_URL;
 
 const apiClient = () => {
   const defaultOptions = {
@@ -19,7 +19,8 @@ const apiClient = () => {
     (config) => {
       const token = localStorage.getItem("token"); // Get the token from local storage
       if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
+        // config.headers.Authorization = `Bearer ${token}`;
+        config.headers.Authorization = `Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbGlhbW1hcmtoYW5iaXR3QGdtYWlsLmNvbSIsImlhdCI6MTY4NDY5NTU2OCwiZXhwIjoxNjg0Njk3MDA4fQ.mAvqOUNqFm_PQUZWY65ojhrGh2txEIOJGflB0VKJPPE`;
       }
       return config;
     },
