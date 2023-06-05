@@ -1,30 +1,97 @@
-import * as React from "react";
+import React, { useEffect, useState } from "react";
+import {
+  Card,
+  CardContent,
+  Container,
+  Grid,
+  Typography,
+  CircularProgress,
+} from "@mui/material";
 import Layout from "../../components/Layout";
-import Typography from "@mui/material/Typography";
-import { Grid } from "@mui/material";
+import axios from "axios";
 
-function Favorite() {
+function FavoriteAudio() {
+  const [audioList, setAudioList] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchAudioList = async () => {
+      const config = {
+        headers: {
+          Authorization:
+            "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbGlhbW1hcmtoYW5iaXR3QGdtYWlsLmNvbSIsImlhdCI6MTY4NTk2MDExOCwiZXhwIjoxNjg2MDQ2NTE4fQ.l4NWE0ZgARnTiIZuXbVk3fXWNfyuzsnIOKXhqbiugZQ",
+        },
+      };
+      try {
+        const response = await axios.get(
+          "http://aukat-o-salawat-api.ap-northeast-1.elasticbeanstalk.com/api/v1/playlist/audio/fav",
+          config
+        );
+        console.log("response is here: ", response);
+
+        if (response.status === 200) {
+          const audioFiles = response.data.data.map((audio) => ({
+            name: audio.name.split("_")[0], // Extract the part before the underscore
+            url: `https://tajammulbucket123.s3.ap-northeast-1.amazonaws.com/${audio.name}`,
+          }));
+          setAudioList(audioFiles);
+          setLoading(false);
+        } else {
+          console.log("Failed to fetch audio list.");
+        }
+      } catch (error) {
+        console.log("Error fetching audio list: ", error);
+      }
+    };
+
+    fetchAudioList();
+  }, []);
+
   return (
     <Layout>
       <Grid item xs={12} sm={8} md={9}>
-        <Typography variant="h4">Favorite</Typography>
-        <Typography variant="body1">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-          ac nibh at felis elementum lacinia ac in magna. Integer lacinia, nunc
-          eu bibendum interdum, purus quam fermentum lacus, sed viverra tellus
-          neque a tellus. Nam ornare quam id turpis sollicitudin, ac mattis
-          tellus tincidunt. Maecenas sollicitudin libero eget ipsum consectetur,
-          vel aliquet justo pulvinar. Pellentesque habitant morbi tristique
-          senectus et netus et malesuada fames ac turpis egestas. Donec euismod
-          ex at purus blandit bibendum. Vivamus et dolor mauris. Vivamus
-          tristique arcu ut magna dapibus, eu euismod tortor semper. Nam cursus
-          nunc in dolor consectetur euismod. Nam id leo vel nibh pulvinar
-          facilisis eu vel lacus. Donec posuere nunc eu nunc sagittis, ac
-          bibendum arcu maximus. Praesent posuere mi quis nisi dictum bibendum.
-        </Typography>
+        <Typography variant="h4">Favorite Audio</Typography>
+        <Container
+          maxWidth="lg"
+          sx={{
+            marginTop: "20px",
+            paddingLeft: 0,
+            paddingRight: 0,
+          }}
+        >
+          {loading ? (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "100vh",
+              }}
+            >
+              <CircularProgress />
+            </div>
+          ) : (
+            <Grid container spacing={2}>
+              {audioList.map((audio) => (
+                <Grid item xs={12} sm={6} md={4} lg={4} key={audio.name}>
+                  <Card sx={{ height: "100%" }}>
+                    <CardContent>
+                      <audio
+                        src={audio.url}
+                        controls
+                        style={{ width: "100%" }}
+                      />
+                      <Typography variant="h6">{audio.name}</Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              ))}
+            </Grid>
+          )}
+        </Container>
       </Grid>
     </Layout>
   );
 }
 
-export default Favorite;
+export default FavoriteAudio;

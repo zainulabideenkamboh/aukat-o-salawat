@@ -19,7 +19,7 @@ function UploadedAudio() {
       const config = {
         headers: {
           Authorization:
-            "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbGlhbW1hcmtoYW5iaXR3QGdtYWlsLmNvbSIsImlhdCI6MTY4NDY5NTU2OCwiZXhwIjoxNjg0Njk3MDA4fQ.mAvqOUNqFm_PQUZWY65ojhrGh2txEIOJGflB0VKJPPE",
+            "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbGlhbW1hcmtoYW5iaXR3QGdtYWlsLmNvbSIsImlhdCI6MTY4NTk2MDExOCwiZXhwIjoxNjg2MDQ2NTE4fQ.l4NWE0ZgARnTiIZuXbVk3fXWNfyuzsnIOKXhqbiugZQ",
         },
       };
       try {

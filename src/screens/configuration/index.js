@@ -3,11 +3,11 @@ import Layout from "../../components/Layout";
 import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
 
-function Configurations() {
+function Configuration() {
   return (
     <Layout>
       <Grid item xs={12} sm={8} md={9}>
-        <Typography variant="h4">Configurations</Typography>
+        <Typography variant="h4">Configuration</Typography>
         <Typography variant="body1">
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
           ac nibh at felis elementum lacinia ac in magna. Integer lacinia, nunc
@@ -27,4 +27,4 @@ function Configurations() {
   );
 }
 
-export default Configurations;
+export default Configuration;

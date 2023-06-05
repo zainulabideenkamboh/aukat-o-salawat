@@ -16,15 +16,138 @@ import {
   TextField,
   CircularProgress,
   FormControlLabel,
+  IconButton,
   Checkbox,
 } from "@mui/material";
 import SpotifyWebApi from "spotify-web-api-js";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import PauseIcon from "@mui/icons-material/Pause";
 import ApiClient from "../../services/ApiClient";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import Toaster from "../../components/Toaster";
+import axios from "axios";
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
+import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
+import NotificationsOffIcon from "@mui/icons-material/NotificationsOff";
+
+import { styled } from "@mui/material/styles";
 
 const spotifyApi = new SpotifyWebApi();
 const clientId = process.env.REACT_APP_CLIENT_ID;
+
+const RedIconButton = styled(IconButton)({
+  color: "white",
+  backgroundColor: "red",
+  "&:hover": {
+    backgroundColor: "gray",
+  },
+  "&:active": {
+    color: "red",
+  },
+});
+
+const GreenIconButton = styled(IconButton)({
+  color: "white",
+  backgroundColor: "green",
+  "&:hover": {
+    backgroundColor: "gray",
+  },
+  "&:active": {
+    color: "green",
+  },
+});
+
+const YellowIconButton = styled(Button)(({ enabled }) => ({
+  color: enabled ? "#1976d2" : "gray",
+  // backgroundColor: enabled ? "yellow" : "gray",
+  // "&:hover": {
+  //   backgroundColor: "gray",
+  // },
+  "&:active": {
+    color: enabled ? "#1976d2" : "gray",
+  },
+}));
+
+const CounterField = ({ initialValue }) => {
+  const [count, setCount] = useState(initialValue);
+
+  const handleIncrement = () => {
+    setCount(count + 1);
+  };
+
+  const handleDecrement = () => {
+    setCount(count - 1);
+  };
+
+  const handleCountChange = (event) => {
+    const value = parseInt(event.target.value);
+    if (!isNaN(value) && value >= 0) {
+      setCount(value);
+    }
+  };
+
+  return (
+    <Box display="flex" alignItems="center">
+      <RedIconButton size="small" onClick={handleDecrement}>
+        <RemoveIcon />
+      </RedIconButton>
+      <TextField
+        type="text"
+        value={count}
+        onChange={handleCountChange}
+        inputProps={{
+          min: 0,
+          style: { textAlign: "center", height: "0px" },
+        }}
+        style={{
+          margin: "0 8px",
+          width: "60px",
+          border: "1px solid #ccc",
+          borderRadius: "4px",
+        }}
+      />
+      <GreenIconButton size="small" onClick={handleIncrement}>
+        <AddIcon />
+      </GreenIconButton>
+    </Box>
+  );
+};
+
+const BellIcon = styled(({ enabled, onClick, ...rest }) => (
+  <YellowIconButton enabled={enabled} onClick={onClick} {...rest}>
+    {enabled ? <NotificationsActiveIcon /> : <NotificationsOffIcon />}
+  </YellowIconButton>
+))(({ enabled }) => ({
+  color: enabled ? "#1976d2" : "gray",
+  // backgroundColor: enabled ? "yellow" : "gray",
+  // "&:hover": {
+  //   backgroundColor: "gray",
+  // },
+  "&:active": {
+    color: enabled ? "#1976d2" : "gray",
+  },
+}));
+
+const BellIconButton = ({ enabled, onClick }) => {
+  const [isBellEnabled, setIsBellEnabled] = useState(enabled);
+
+  const handleBellClick = () => {
+    console.log("handleBellClick is called");
+    setIsBellEnabled(!isBellEnabled);
+  };
+
+  return (
+    <BellIcon
+      enabled={isBellEnabled}
+      onClick={() => {
+        onClick();
+        handleBellClick();
+      }}
+    />
+  );
+};
 
 function NamazTiming() {
   const [selectedNamaz, setSelectedNamaz] = useState(null);
@@ -39,6 +162,149 @@ function NamazTiming() {
   const [filteredSpotifyAudioData, setFilteredSpotifyAudioData] = useState([]);
   const [namazTimings, setNamazTimings] = useState([]);
   const [loading, setLoading] = useState(true); // State for tracking loading status
+  const [audioList, setAudioList] = useState([]);
+  const [favoriteAudios, setFavoriteAudios] = useState([]); // State for storing favorite audios
+  const [timeModalOpen, setTimeModalOpen] = useState(false);
+  const [hours, setHours] = useState("");
+  const [minutes, setMinutes] = useState("");
+  const [seconds, setSeconds] = useState("");
+  const [validationError, setValidationError] = useState("");
+  const [validationHoursError, setValidationHoursError] = useState("");
+  const [validationMinutesError, setValidationMinutesError] = useState("");
+  const [validationSecondsError, setValidationSecondsError] = useState("");
+  const [toasterState, setToasterState] = useState({
+    open: false,
+    type: "",
+    message: "",
+  });
+  const [audioType, setAudioType] = useState("");
+  const [reminderEnabled, setReminderEnabled] = useState(false);
+  const [audioName, setAudioName] = useState("");
+
+  const handleToasterClose = () => {
+    setToasterState({
+      ...toasterState,
+      open: false,
+    });
+  };
+
+  const handleToasterOpen = (type, message) => {
+    setToasterState({
+      open: true,
+      type,
+      message,
+    });
+    setTimeout(handleToasterClose, 3000);
+  };
+
+  const setNamazTime = (time) => {
+    const defaultTime = time.slice(0, 5);
+    const [h, m] = defaultTime.split(":");
+    setHours(h);
+    setMinutes(m);
+    setSeconds("00");
+  };
+
+  const handleTimeOpenModal = (time) => {
+    setTimeModalOpen(true);
+    setNamazTime(time);
+  };
+
+  const handleTimeCloseModal = () => {
+    setTimeModalOpen(false);
+    // setHours("");
+    // setMinutes("");
+    // setSeconds("");
+    setValidationError("");
+  };
+
+  // const handleSaveNamazTime = () => {
+  //   if (!validateTime(hours, minutes, seconds)) {
+  //     setValidationError("Invalid format.");
+  //     return;
+  //   }
+
+  //   const time = `${hours.padStart(2, "0")}:${minutes.padStart(
+  //     2,
+  //     "0"
+  //   )}:${seconds.padStart(2, "0")}`;
+  //   console.log("Namaz time saved:", time);
+
+  //   handleCloseModal();
+  // };
+
+  const validateTime = (h, m, s) => {
+    const validHours = h >= 0 && h <= 23;
+    const validMinutes = m >= 0 && m <= 59;
+    const validSeconds = s >= 0 && s <= 59;
+
+    return validHours && validMinutes && validSeconds;
+  };
+
+  const handleHoursChange = (e) => {
+    const value = e.target.value;
+    setHours(value);
+    setValidationHoursError("");
+    if (value !== "" && !validateTime(value, minutes, seconds)) {
+      setValidationHoursError("Invalid hour (0-23).");
+    }
+  };
+
+  const handleMinutesChange = (e) => {
+    const value = e.target.value;
+    setMinutes(value);
+    setValidationMinutesError("");
+    if (value !== "" && !validateTime(hours, value, seconds)) {
+      setValidationMinutesError("Invalid minute (0-59).");
+    }
+  };
+
+  const handleSecondsChange = (e) => {
+    const value = e.target.value;
+    setSeconds(value);
+    setValidationSecondsError("");
+    if (value !== "" && !validateTime(hours, minutes, value)) {
+      setValidationSecondsError("Invalid second (0-59).");
+    }
+  };
+
+  useEffect(() => {
+    const fetchAudioList = async () => {
+      const config = {
+        headers: {
+          Authorization:
+            "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbGlhbW1hcmtoYW5iaXR3QGdtYWlsLmNvbSIsImlhdCI6MTY4NTk2MDExOCwiZXhwIjoxNjg2MDQ2NTE4fQ.l4NWE0ZgARnTiIZuXbVk3fXWNfyuzsnIOKXhqbiugZQ",
+        },
+      };
+      try {
+        const response = await axios.get(
+          "http://aukat-o-salawat-api.ap-northeast-1.elasticbeanstalk.com/api/v1/playlist/",
+          config
+        );
+        if (response.status === 200) {
+          const audioFiles = response.data.data.audios.map((audio) => ({
+            name: audio.name.split("_")[0], // Extract the part before the underscore
+            url: `https://tajammulbucket123.s3.ap-northeast-1.amazonaws.com/${audio.name}`,
+            musicId: audio.id,
+            duration: audio.size,
+            isFav: audio.isFav,
+          }));
+          const updatedAudioFiles = audioFiles.map((audio) => ({
+            ...audio,
+            isPlaying: false,
+          }));
+          setUploadedMusicData(updatedAudioFiles);
+          setLoading(false);
+        } else {
+          console.log("Failed to fetch audio list.");
+        }
+      } catch (error) {
+        console.log("Error fetching audio list: ", error);
+      }
+    };
+
+    fetchAudioList();
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -125,35 +391,53 @@ function NamazTiming() {
     }
   }, [audioPlayer]);
 
+  useEffect(() => {
+    setFilteredUploadedMusic(uploadedMusicData);
+  }, [uploadedMusicData]);
+
   const handleSelectAudio = (namazName) => {
     setSelectedNamaz(namazName);
     setModalOpen(true);
   };
 
-  const handleSelectSchedule = () => {
-    console.log("handleSelectSchedule");
-  };
-
   const handleCloseModal = () => {
     setModalOpen(false);
+    setTimeModalOpen(false);
   };
 
   const handleSelectOption = (option) => {
     setSelectedOption(option);
   };
 
-  const handleAudioSelect = (audioId) => {
+  const handleAudioSelect = (audioId, name, type) => {
+    setAudioType(type);
     setSelectedAudio(audioId);
+    setAudioName(name);
   };
 
   const handleSaveMusic = () => {
-    console.log(`Selected audio: ${selectedAudio}`);
+    console.log(`Selected audio: ${audioName}`);
     handleCloseModal();
   };
 
   const handleSetReminder = (namaz) => {
-    console.log("handleSetReminder");
-    alert("Reminder has been set");
+    handleToasterOpen("success", "Reminder set successfully!");
+
+    console.log(
+      "handleSetReminder : ",
+      namaz,
+      " | Time : ",
+      hours,
+      " | ",
+      minutes,
+      " | ",
+      seconds,
+      " | selectedAudio : ",
+      selectedAudio,
+      " | audioType: ",
+      audioType
+    );
+    // alert("Reminder has been set");
   };
 
   const handlePlayPause = (previewUrl, trackId) => {
@@ -193,6 +477,86 @@ function NamazTiming() {
     });
   };
 
+  const handleUploadedPlayPause = (previewUrl, trackId) => {
+    if (audioPlayer && audioPlayer.src === previewUrl) {
+      if (audioPlayer.paused) {
+        setAudioPlayer((prevAudioPlayer) => {
+          prevAudioPlayer.play();
+          return prevAudioPlayer;
+        });
+        updateUploadedTrackIsPlaying(trackId, true);
+      } else {
+        setAudioPlayer((prevAudioPlayer) => {
+          prevAudioPlayer.pause();
+          return prevAudioPlayer;
+        });
+        updateUploadedTrackIsPlaying(trackId, false);
+      }
+    } else {
+      setAudioPlayer(new Audio(previewUrl));
+      updateUploadedTrackIsPlaying(trackId, true);
+    }
+  };
+
+  const updateUploadedTrackIsPlaying = (trackId, isPlaying) => {
+    setUploadedMusicData((prevData) => {
+      const newData = [...prevData];
+      newData.forEach((playlist) => {
+        if (playlist.musicId === trackId) {
+          playlist.isPlaying = isPlaying;
+        } else {
+          playlist.isPlaying = false;
+        }
+      });
+      return newData;
+    });
+  };
+
+  const postFavoriteAudio = async (musicId) => {
+    try {
+      const response = await ApiClient.post(
+        `http://aukat-o-salawat-api.ap-northeast-1.elasticbeanstalk.com/api/v1/playlist/audio/fav/${musicId}`
+      );
+      const data = response.data;
+      if (data.code === 200 && data.message === "SUCCESS") {
+        handleToasterOpen("success", "Favorite audio added successfully!");
+      } else {
+        handleToasterOpen("error", "Favorite audio failed. Please try again.");
+      }
+    } catch (error) {
+      console.log("Error saving favorite audios: ", error);
+      handleToasterOpen(
+        "error",
+        "An error occurred while adding favorite audio. Please try again."
+      );
+    }
+  };
+
+  const handleFavoriteToggle = (musicId) => {
+    const updatedMusicData = uploadedMusicData.map((music) => {
+      if (music.musicId === musicId) {
+        return {
+          ...music,
+          isFav: !music.isFav, // Toggle the isFav property
+        };
+      }
+      return music;
+    });
+
+    setUploadedMusicData(updatedMusicData);
+
+    if (favoriteAudios.includes(musicId)) {
+      // If already a favorite, remove it from the list
+      setFavoriteAudios(favoriteAudios.filter((id) => id !== musicId));
+      console.log("I am checked : ", favoriteAudios);
+      postFavoriteAudio(musicId);
+    } else {
+      // If not a favorite, add it to the list
+      setFavoriteAudios([...favoriteAudios, musicId]);
+      console.log("I am unchecked : ", musicId);
+    }
+  };
+
   useEffect(() => {
     // Filter Spotify audio based on the search value
     const filteredSpotifyAudio = spotifyAudioData.map((playlist) => ({
@@ -220,9 +584,15 @@ function NamazTiming() {
     setSearchValue(searchValue);
   };
 
+  // useEffect(()=>{
+  //   setHours()
+
+  // }, [hours, minutes, seconds])
+
   return (
     <Layout>
       <Grid item xs={12} sm={8} md={9}>
+        <Toaster {...toasterState} />
         <Typography variant="h4">Namaz Timing</Typography>
         <Box p={2}>
           {loading ? ( // Show the loader if the loading state is true
@@ -244,8 +614,8 @@ function NamazTiming() {
                     <TableCell>Namaz</TableCell>
                     <TableCell>Time</TableCell>
                     <TableCell>Select Audio</TableCell>
-                    <TableCell>Select Schedule</TableCell>
-                    <TableCell>Actions</TableCell>
+                    <TableCell>Adjust Schedule</TableCell>
+                    <TableCell>Reminder</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -263,26 +633,21 @@ function NamazTiming() {
                         >
                           Select Audio
                         </Button>
+
+                        {audioName}
                       </TableCell>
                       <TableCell>
-                        <Button
-                          variant="outlined"
-                          color="primary"
-                          size="small"
-                          onClick={() => handleSelectSchedule(namaz.name)}
-                        >
-                          Select Schedule
-                        </Button>
+                        <CounterField initialValue={0} />
                       </TableCell>
                       <TableCell>
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          size="small"
-                          onClick={() => handleSetReminder(namaz.name)}
-                        >
-                          Set Reminder
-                        </Button>
+                        <BellIconButton
+                          enabled={false}
+                          onClick={() => {
+                            console.log("BellIcon is clicked");
+                            setNamazTime(namaz.time);
+                            handleSetReminder(namaz);
+                          }}
+                        />
                       </TableCell>
                     </TableRow>
                   ))}
@@ -326,7 +691,7 @@ function NamazTiming() {
             <Button
               variant="contained"
               color={
-                selectedOption === "Spotify Audio" ? "primary" : "secondary"
+                selectedOption === "Spotify Audio" ? "secondary" : "primary"
               }
               onClick={() => handleSelectOption("Spotify Audio")}
             >
@@ -335,7 +700,7 @@ function NamazTiming() {
             <Button
               variant="contained"
               color={
-                selectedOption === "Uploaded Audio" ? "primary" : "secondary"
+                selectedOption === "Uploaded Audio" ? "secondary" : "primary"
               }
               onClick={() => handleSelectOption("Uploaded Audio")}
             >
@@ -379,7 +744,13 @@ function NamazTiming() {
                             <TableCell>
                               <Checkbox
                                 checked={selectedAudio === track.id}
-                                onChange={() => handleAudioSelect(track.id)}
+                                onChange={() =>
+                                  handleAudioSelect(
+                                    track.id,
+                                    track.title,
+                                    "spotify"
+                                  )
+                                }
                               />
                             </TableCell>
                             <TableCell>{track.title}</TableCell>
@@ -394,7 +765,9 @@ function NamazTiming() {
                             <TableCell>
                               <Button
                                 variant="outlined"
-                                color="primary"
+                                color={
+                                  track.isPlaying ? "secondary" : "primary"
+                                }
                                 size="small"
                                 onClick={() =>
                                   handlePlayPause(track.previewUrl, track.id)
@@ -429,18 +802,62 @@ function NamazTiming() {
               />
               <TableContainer>
                 <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Selected</TableCell>
+                      <TableCell>Title</TableCell>
+                      {/* <TableCell>Duration</TableCell> */}
+                      <TableCell>Favorite</TableCell>
+                      <TableCell>Play/Pause</TableCell>
+                    </TableRow>
+                  </TableHead>
                   <TableBody>
-                    {filteredUploadedMusic.map((music) => (
-                      <TableRow key={music.id}>
+                    {filteredUploadedMusic.map((music, index) => (
+                      <TableRow key={index}>
+                        <TableCell>
+                          <Checkbox
+                            checked={selectedAudio === music.musicId}
+                            onChange={() =>
+                              handleAudioSelect(
+                                music.musicId,
+                                music.name,
+                                "uploaded"
+                              )
+                            }
+                          />
+                        </TableCell>
                         <TableCell>{music.name}</TableCell>
-                        <TableCell>{music.artist}</TableCell>
-                        <TableCell>{music.duration}</TableCell>
+                        {/* <TableCell>
+                          {`${Math.floor(music.duration / 60000)}:${(
+                            "0" + Math.floor((music.duration % 60000) / 1000)
+                          ).slice(-2)}`}
+                        </TableCell> */}
+
+                        <TableCell>
+                          {music.isFav ? (
+                            <FavoriteIcon
+                              color="secondary"
+                              onClick={() =>
+                                handleFavoriteToggle(music.musicId)
+                              }
+                            />
+                          ) : (
+                            <FavoriteBorderIcon
+                              onClick={() =>
+                                handleFavoriteToggle(music.musicId)
+                              }
+                            />
+                          )}
+                        </TableCell>
                         <TableCell>
                           <Button
                             variant="outlined"
-                            color="primary"
+                            color={music.isPlaying ? "secondary" : "primary"}
                             size="small"
-                            onClick={() => handlePlayPause(music.id)}
+                            onClick={() => {
+                              handleUploadedPlayPause(music.url, music.id);
+                              console.log("isPlaying : ", music.isPlaying);
+                            }}
                           >
                             {music.isPlaying ? (
                               <PauseIcon />
@@ -448,12 +865,6 @@ function NamazTiming() {
                               <PlayArrowIcon />
                             )}
                           </Button>
-                        </TableCell>
-                        <TableCell>
-                          <Checkbox
-                            checked={selectedAudio === music.id}
-                            onChange={() => handleAudioSelect(music.id)}
-                          />
                         </TableCell>
                       </TableRow>
                     ))}
@@ -474,6 +885,76 @@ function NamazTiming() {
               Save
             </Button>
           </Box>
+        </Box>
+      </Modal>
+      <Modal open={timeModalOpen} onClose={handleCloseModal}>
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            bgcolor: "background.paper",
+            boxShadow: 24,
+            p: 4,
+            maxWidth: 500,
+          }}
+        >
+          <Typography variant="h6" sx={{ mb: 2 }}>
+            Select Namaz Reminder
+          </Typography>
+          <Grid container spacing={2} alignItems="center">
+            <Grid item xs={4}>
+              <TextField
+                type="number"
+                value={hours}
+                onChange={handleHoursChange}
+                label="Hours"
+                error={!!validationHoursError}
+                helperText={validationHoursError}
+              />
+            </Grid>
+            <Grid item xs={4}>
+              <TextField
+                type="number"
+                value={minutes}
+                onChange={handleMinutesChange}
+                label="Minutes"
+                error={!!validationMinutesError}
+                helperText={validationMinutesError}
+              />
+            </Grid>
+            <Grid item xs={4}>
+              <TextField
+                type="number"
+                value={seconds}
+                onChange={handleSecondsChange}
+                label="Seconds"
+                error={!!validationSecondsError}
+                helperText={validationSecondsError}
+              />
+            </Grid>
+          </Grid>
+          {/* <Button
+            variant="contained"
+            onClick={handleSaveNamazTime}
+            sx={{ mt: 2 }}
+          >
+            Save
+          </Button> */}
+          <Button
+            variant="contained"
+            onClick={handleTimeCloseModal}
+            sx={{
+              mt: 2,
+              ml: "auto",
+              display: "flex",
+              justifyContent: "flex-end",
+              marginTop: 2,
+            }}
+          >
+            Save
+          </Button>
         </Box>
       </Modal>
     </Layout>

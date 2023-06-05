@@ -1,10 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
 import { styled } from "@mui/material/styles";
-import { List, ListItem, ListItemIcon, ListItemText } from "@mui/material";
-import { Link } from "react-router-dom";
 import {
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Collapse,
+} from "@mui/material";
+import { Link } from "react-router-dom";
+
+import MosqueIcon from "@mui/icons-material/Mosque";
+import DeveloperModeIcon from "@mui/icons-material/DeveloperMode";
+import {
+  ExpandLess as ExpandLessIcon,
+  ExpandMore as ExpandMoreIcon,
   CloudUpload as CloudUploadIcon,
-  Code as CodeIcon,
   LibraryMusic as LibraryMusicIcon,
   MusicNote as MusicNoteIcon,
   Favorite as FavoriteIcon,
@@ -13,7 +23,10 @@ import {
   Tune as TuneIcon,
   ExitToApp as ExitToAppIcon,
 } from "@mui/icons-material";
-import MosqueIcon from "@mui/icons-material/Mosque";
+import WatchLaterIcon from "@mui/icons-material/WatchLater";
+import LockIcon from "@mui/icons-material/Lock";
+import ExploreIcon from "@mui/icons-material/Explore";
+import LocalLibraryIcon from "@mui/icons-material/LocalLibrary";
 
 const SidebarContainer = styled("aside")(({ isOpen }) => ({
   width: "250px",
@@ -31,67 +44,112 @@ const SidebarList = styled(List)({
 });
 
 const Sidebar = ({ isOpen }) => {
+  const [audioMenuOpen, setAudioMenuOpen] = useState(false);
+  const [settingsMenuOpen, setSettingsMenuOpen] = useState(false);
+
+  const handleAudioMenuToggle = () => {
+    setAudioMenuOpen((prevOpen) => !prevOpen);
+  };
+
+  const handleSettingsMenuToggle = () => {
+    setSettingsMenuOpen((prevOpen) => !prevOpen);
+  };
+
   return (
     <SidebarContainer isOpen={isOpen}>
       <SidebarList>
-        <ListItem button component={Link} to="/upload-audio">
-          <ListItemIcon>
-            <CloudUploadIcon />
-          </ListItemIcon>
-          <ListItemText primary="Upload Audio" />
-        </ListItem>
-
-        <ListItem button component={Link} to="/uploaded-audio">
-          <ListItemIcon>
-            <LibraryMusicIcon />
-          </ListItemIcon>
-          <ListItemText primary="Uploaded Audio" />
-        </ListItem>
-        <ListItem button component={Link} to="/audio-list">
-          <ListItemIcon>
-            <MusicNoteIcon />
-          </ListItemIcon>
-          <ListItemText primary="Audio List" />
-        </ListItem>
         <ListItem button component={Link} to="/namaz-timing">
           <ListItemIcon>
             <MosqueIcon />
           </ListItemIcon>
           <ListItemText primary="Namaz Timing" />
         </ListItem>
-        <ListItem button component={Link} to="/favorite">
+
+        {/* Audio */}
+        <ListItem button onClick={handleAudioMenuToggle}>
           <ListItemIcon>
-            <FavoriteIcon />
+            <LibraryMusicIcon />
           </ListItemIcon>
-          <ListItemText primary="Favorite" />
+          <ListItemText primary="Audio" />
+          {audioMenuOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
         </ListItem>
-        <ListItem button component={Link} to="/playback-schedule">
+        <Collapse in={audioMenuOpen} timeout="auto" unmountOnExit>
+          <List component="div" disablePadding>
+            <ListItem button component={Link} to="/upload-audio">
+              <ListItemIcon>
+                <CloudUploadIcon />
+              </ListItemIcon>
+              <ListItemText primary="Upload Audio" />
+            </ListItem>
+            <ListItem button component={Link} to="/uploaded-audio">
+              <ListItemIcon>
+                <LibraryMusicIcon />
+              </ListItemIcon>
+              <ListItemText primary="Uploaded Audio" />
+            </ListItem>
+            <ListItem button component={Link} to="/audio-list">
+              <ListItemIcon>
+                <MusicNoteIcon />
+              </ListItemIcon>
+              <ListItemText primary="Audio List" />
+            </ListItem>
+            <ListItem button component={Link} to="/favorite-audio">
+              <ListItemIcon>
+                <FavoriteIcon />
+              </ListItemIcon>
+              <ListItemText primary="Favorite Audio" />
+            </ListItem>
+          </List>
+        </Collapse>
+        {/* End Audio */}
+
+        {/* <ListItem button component={Link} to="/playback-schedule">
           <ListItemIcon>
-            <ScheduleIcon />
+            <WatchLaterIcon />
           </ListItemIcon>
           <ListItemText primary="Playback Schedule" />
-        </ListItem>
+        </ListItem> */}
         <ListItem button component={Link} to="/generate-code">
           <ListItemIcon>
-            <CodeIcon />
+            <DeveloperModeIcon />
           </ListItemIcon>
           <ListItemText primary="Generate Code" />
         </ListItem>
-        <ListItem button component={Link} to="/settings">
+        {/* ... remaining menu items ... */}
+
+        <ListItem button onClick={handleSettingsMenuToggle}>
           <ListItemIcon>
             <SettingsIcon />
           </ListItemIcon>
           <ListItemText primary="Settings" />
+          {settingsMenuOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
         </ListItem>
-        <ListItem button component={Link} to="/configurations">
-          <ListItemIcon>
-            <TuneIcon />
-          </ListItemIcon>
-          <ListItemText primary="Configurations" />
-        </ListItem>
+        <Collapse in={settingsMenuOpen} timeout="auto" unmountOnExit>
+          <List component="div" disablePadding>
+            <ListItem button component={Link} to="/namaz-method">
+              <ListItemIcon>
+                <LocalLibraryIcon />
+              </ListItemIcon>
+              <ListItemText primary="Namaz Methods" />
+            </ListItem>
+            <ListItem button component={Link} to="/location">
+              <ListItemIcon>
+                <ExploreIcon />
+              </ListItemIcon>
+              <ListItemText primary="Location" />
+            </ListItem>
+            <ListItem button component={Link} to="/configuration">
+              <ListItemIcon>
+                <TuneIcon />
+              </ListItemIcon>
+              <ListItemText primary="Configuration" />
+            </ListItem>
+          </List>
+        </Collapse>
+
         <ListItem button component={Link} to="/logout">
           <ListItemIcon>
-            <ExitToAppIcon />
+            <LockIcon />
           </ListItemIcon>
           <ListItemText primary="Logout" />
         </ListItem>

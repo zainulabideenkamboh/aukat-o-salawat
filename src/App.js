@@ -10,13 +10,15 @@ import Settings from "./screens/settings";
 import PlaybackSchedule from "./screens/playback-schedule";
 import UploadAudio from "./screens/upload-audio";
 import UploadedAudio from "./screens/uploaded-audio";
-import Favorite from "./screens/favorite-audio";
+import FavoriteAudio from "./screens/favorite-audio";
 import GenerateCode from "./screens/generate-code";
 import { useEffect } from "react";
 import moment from "moment-timezone";
 import axios from "axios";
-import Configurations from "./screens/configurations";
+import Configuration from "./screens/configuration";
 import NamazTiming from "./screens/namaz-timing";
+import NamazMethod from "./screens/namaz-method";
+import Location from "./screens/location";
 
 function App() {
   useEffect(() => {
@@ -45,11 +47,14 @@ function App() {
         <Route path="/playback-schedule" element={<PlaybackSchedule />} />
         <Route path="/upload-audio" element={<UploadAudio />} />
         <Route path="/uploaded-audio" element={<UploadedAudio />} />
-        <Route path="/favorite" element={<Favorite />} />
+        <Route path="/favorite-audio" element={<FavoriteAudio />} />
         <Route path="/generate-code" element={<GenerateCode />} />
-        <Route path="/settings" element={<Settings />} />
-        <Route path="/configurations" element={<Configurations />} />
+        {/* <Route path="/settings" element={<Settings />} /> */}
+        <Route path="/configuration" element={<Configuration />} />
         <Route path="/namaz-timing" element={<NamazTiming />} />
+        <Route path="/namaz-method" element={<NamazMethod />} />
+        <Route path="/location" element={<Location />} />
+
         {/* <Route path="/logout" element={<Configurations />} /> */}
       </Routes>
     </BrowserRouter>
