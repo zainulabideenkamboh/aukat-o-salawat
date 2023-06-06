@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Layout from "../../components/Layout";
 import {
   Grid,
@@ -70,8 +70,13 @@ const YellowIconButton = styled(Button)(({ enabled }) => ({
   },
 }));
 
-const CounterField = ({ initialValue }) => {
+const CounterField = ({
+  initialValue,
+  onChangeCounterHandler,
+  // onClickHandleSetReminder,
+}) => {
   const [count, setCount] = useState(initialValue);
+  const [isInitialRender, setIsInitialRender] = useState(true);
 
   const handleIncrement = () => {
     setCount(count + 1);
@@ -86,7 +91,20 @@ const CounterField = ({ initialValue }) => {
     if (!isNaN(value) && value >= 0) {
       setCount(value);
     }
+    // setTimeout(() => {
+    //   onClickHandleSetReminder();
+    // }, 1000);
   };
+
+  useEffect(() => {
+    if (isInitialRender) {
+      setIsInitialRender(false);
+    } else {
+      setTimeout(() => {
+        onChangeCounterHandler(count);
+      }, 2000);
+    }
+  }, [count]);
 
   return (
     <Box display="flex" alignItems="center">
@@ -134,7 +152,7 @@ const BellIconButton = ({ enabled, onClick }) => {
   const [isBellEnabled, setIsBellEnabled] = useState(enabled);
 
   const handleBellClick = () => {
-    console.log("handleBellClick is called");
+    // console.log("handleBellClick is called");
     setIsBellEnabled(!isBellEnabled);
   };
 
@@ -180,6 +198,8 @@ function NamazTiming() {
   const [audioType, setAudioType] = useState("");
   const [reminderEnabled, setReminderEnabled] = useState(false);
   const [audioName, setAudioName] = useState("");
+  const [count, setCount] = useState(0);
+  const [isChanged, setIsChanged] = useState(false);
 
   const handleToasterClose = () => {
     setToasterState({
@@ -273,7 +293,7 @@ function NamazTiming() {
       const config = {
         headers: {
           Authorization:
-            "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbGlhbW1hcmtoYW5iaXR3QGdtYWlsLmNvbSIsImlhdCI6MTY4NTk2MDExOCwiZXhwIjoxNjg2MDQ2NTE4fQ.l4NWE0ZgARnTiIZuXbVk3fXWNfyuzsnIOKXhqbiugZQ",
+            "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbGlhbW1hcmtoYW5iaXR3QGdtYWlsLmNvbSIsImlhdCI6MTY4NTk4NjMyOSwiZXhwIjoxNjg2MDcyNzI5fQ.2jQKYu2YfatTTHmF18deH7vT1pjHnFi3fnFS3voS7_A",
         },
       };
       try {
@@ -318,20 +338,22 @@ function NamazTiming() {
         };
 
         const response = await ApiClient.post(
-          `http://aukat-o-salawat-api.ap-northeast-1.elasticbeanstalk.com/api/v1/namaz/time`,
+          `http://aukat-o-salawat-api.ap-northeast-1.elasticbeanstalk.com/api/v1/reminder/`,
           payload
         );
         const data = response.data;
+        // console.log("data.data is 1: ", data);
 
-        if (data.code === 200 && data.message === "SUCCESS") {
-          const timings = JSON.parse(data.data);
-          const updatedNamazTimings = Object.entries(timings).map(
-            ([name, time]) => ({
-              name,
-              time,
-            })
-          );
-          setNamazTimings(updatedNamazTimings);
+        if (data.code === 200 && data.message === "Success") {
+          // console.log("data.data is : ", data.data);
+          // const timings = JSON.parse(data.data);
+          // const updatedNamazTimings = Object.entries(timings).map(
+          //   ([name, time]) => ({
+          //     name,
+          //     time,
+          //   })
+          // );
+          setNamazTimings(data.data);
         }
 
         setLoading(false); // Set loading to false after data is fetched
@@ -342,7 +364,7 @@ function NamazTiming() {
     };
 
     fetchData();
-  }, []);
+  }, [isChanged]);
 
   useEffect(() => {
     const hashParams = new URLSearchParams(window.location.hash.substring(1));
@@ -416,27 +438,54 @@ function NamazTiming() {
   };
 
   const handleSaveMusic = () => {
-    console.log(`Selected audio: ${audioName}`);
+    // console.log(`Selected audio: ${audioName}`);
     handleCloseModal();
   };
 
-  const handleSetReminder = (namaz) => {
-    handleToasterOpen("success", "Reminder set successfully!");
+  const handleSetReminder = async (namaz, count, isEnabled) => {
+    // handleToasterOpen("success", "Reminder set successfully!");
 
-    console.log(
-      "handleSetReminder : ",
-      namaz,
-      " | Time : ",
-      hours,
-      " | ",
-      minutes,
-      " | ",
-      seconds,
-      " | selectedAudio : ",
-      selectedAudio,
-      " | audioType: ",
-      audioType
-    );
+    // console.log("audioFile: ", audioName);
+    // console.log("type: ", audioType);
+    // console.log("time: ", namaz.time);
+    // console.log("isEnabled: ", isEnabled);
+    // console.log("Namaz: ", namaz.namaz);
+    // console.log("AdjustedTime : ", count);
+
+    try {
+      const payload = {
+        audioFile: audioName,
+        type: audioType,
+        time: namaz.time,
+        adjustedTime: count,
+        isEnabled: isEnabled,
+        namaz: namaz.namaz,
+      };
+      const response = await ApiClient.post(
+        `http://aukat-o-salawat-api.ap-northeast-1.elasticbeanstalk.com/api/v1/reminder/save`,
+        payload
+      );
+      // console.log("response here : ", response);
+      const data = response.data;
+      if (data.code === 200 && data.message === "SUCCESS") {
+        handleToasterOpen("success", "Reminder saved successfully!");
+      } else {
+        handleToasterOpen("error", "Reminder failed. Please try again.");
+      }
+    } catch (error) {
+      console.log("Error saving reminder: ", error);
+      handleToasterOpen(
+        "error",
+        "An error occurred while saving reminder. Please try again."
+      );
+    }
+
+    // console.log("audioFile: ", audioName);
+    // console.log("type: ", audioType);
+    // console.log("time: ", namaz.time);
+    // console.log("isEnabled: ", namaz.isEnabled);
+    // console.log("Namaz: ", namaz.namaz);
+    // console.log("AdjustedTime : ", count);
     // alert("Reminder has been set");
   };
 
@@ -548,12 +597,12 @@ function NamazTiming() {
     if (favoriteAudios.includes(musicId)) {
       // If already a favorite, remove it from the list
       setFavoriteAudios(favoriteAudios.filter((id) => id !== musicId));
-      console.log("I am checked : ", favoriteAudios);
+      // console.log("I am checked : ", favoriteAudios);
       postFavoriteAudio(musicId);
     } else {
       // If not a favorite, add it to the list
       setFavoriteAudios([...favoriteAudios, musicId]);
-      console.log("I am unchecked : ", musicId);
+      // console.log("I am unchecked : ", musicId);
     }
   };
 
@@ -583,11 +632,6 @@ function NamazTiming() {
     const searchValue = event.target.value;
     setSearchValue(searchValue);
   };
-
-  // useEffect(()=>{
-  //   setHours()
-
-  // }, [hours, minutes, seconds])
 
   return (
     <Layout>
@@ -621,7 +665,7 @@ function NamazTiming() {
                 <TableBody>
                   {namazTimings.map((namaz, index) => (
                     <TableRow key={index}>
-                      <TableCell>{namaz.name}</TableCell>
+                      <TableCell>{namaz.namaz}</TableCell>
                       <TableCell>{namaz.time}</TableCell>
 
                       <TableCell>
@@ -634,18 +678,33 @@ function NamazTiming() {
                           Select Audio
                         </Button>
 
-                        {audioName}
+                        {/* {audioName} */}
                       </TableCell>
                       <TableCell>
-                        <CounterField initialValue={0} />
+                        <CounterField
+                          initialValue={namaz.adjustedTime}
+                          onChangeCounterHandler={(count) => {
+                            setCount(count);
+                            setNamazTime(namaz.time);
+                            handleSetReminder(namaz, count, namaz.isEnabled);
+                            setIsChanged((prev) => !prev);
+                          }}
+                          // onClickHandleSetReminder={(count) => {
+                          //   console.log("I am count : ", count);
+                          //   setNamazTime(namaz.time);
+                          //   handleSetReminder(namaz, count);
+                          // }}
+                        />
                       </TableCell>
                       <TableCell>
                         <BellIconButton
-                          enabled={false}
+                          enabled={namaz.isEnabled}
                           onClick={() => {
-                            console.log("BellIcon is clicked");
+                            console.log("namaz.isEnabled : ", namaz.isEnabled);
+
                             setNamazTime(namaz.time);
-                            handleSetReminder(namaz);
+                            handleSetReminder(namaz, count, !namaz.isEnabled);
+                            setIsChanged((prev) => !prev);
                           }}
                         />
                       </TableCell>
@@ -856,7 +915,7 @@ function NamazTiming() {
                             size="small"
                             onClick={() => {
                               handleUploadedPlayPause(music.url, music.id);
-                              console.log("isPlaying : ", music.isPlaying);
+                              // console.log("isPlaying : ", music.isPlaying);
                             }}
                           >
                             {music.isPlaying ? (
