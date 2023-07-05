@@ -1,6 +1,7 @@
 import axios from "axios";
 
 const API_BASE_URL = process.env.REACT_APP_URL;
+// const API_BASE_URL = "https://salaat-app-391409.an.r.appspot.com/";
 
 const apiClient = () => {
   const defaultOptions = {
@@ -20,7 +21,7 @@ const apiClient = () => {
       const token = localStorage.getItem("token"); // Get the token from local storage
       if (token) {
         // config.headers.Authorization = `Bearer ${token}`;
-        config.headers.Authorization = `Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbGlhbW1hcmtoYW5iaXR3QGdtYWlsLmNvbSIsImlhdCI6MTY4NTk4NjMyOSwiZXhwIjoxNjg2MDcyNzI5fQ.2jQKYu2YfatTTHmF18deH7vT1pjHnFi3fnFS3voS7_A`;
+        config.headers.Authorization = `Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbGlhbW1hcmtoYW5iaXR3QGdtYWlsLmNvbSIsImlhdCI6MTY4ODQ3ODExMiwiZXhwIjoxNjg4NTY0NTEyfQ.MCvkdXsmkP1MyOgTZCEqydj8p1gvPtcGQyOdCthHgP8`;
       }
       return config;
     },

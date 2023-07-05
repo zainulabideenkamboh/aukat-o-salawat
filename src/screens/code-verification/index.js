@@ -3,7 +3,9 @@ import { styled } from "@mui/material/styles";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import ApiClient from "../../services/ApiClient";
+import Toaster from "../../components/Toaster";
 
 const Container = styled("form")({
   padding: "32px",
@@ -70,6 +72,30 @@ const StyledArrowBackIcon = styled(ArrowBackIosIcon)({
 function CodeVerification() {
   const [code, setCode] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
+  const { email } = location.state ?? {};
+  console.log("Email 1 : ", email);
+  const [toasterState, setToasterState] = useState({
+    open: false,
+    type: "",
+    message: "",
+  });
+
+  const handleToasterClose = () => {
+    setToasterState({
+      ...toasterState,
+      open: false,
+    });
+  };
+
+  const handleToasterOpen = (type, message) => {
+    setToasterState({
+      open: true,
+      type,
+      message,
+    });
+    setTimeout(handleToasterClose, 3000);
+  };
 
   const handleCodeChange = (event, index) => {
     let value = event.target.value;
@@ -81,14 +107,41 @@ function CodeVerification() {
     });
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
+    console.log("Email 2 : ", email);
+    const concatenatedString = code.join("");
     event.preventDefault();
-    navigate("/sign-in");
-    alert("Submitted");
+    try {
+      const response = await ApiClient.post("api/v1/otp/validate", {
+        email,
+        code: concatenatedString,
+      });
+      if (response.data.status === 200) {
+        navigate("/sign-in");
+      } else {
+        handleToasterOpen("error", "An error occurred while validating OTP.");
+      }
+    } catch (error) {
+      handleToasterOpen("error", "Failed! Something went wrong.");
+    }
   };
 
-  const resendCodeHandler = () => {
-    alert("resendCodeHandler");
+  const resendCodeHandler = async () => {
+    try {
+      console.log("Email 3 : ", email);
+
+      const response = await ApiClient.post("api/v1/otp/generate", { email });
+      if (response.status === 200) {
+        handleToasterOpen(
+          "success",
+          "OPT has been generated, please check your email."
+        );
+      } else {
+        handleToasterOpen("error", "An error occurred while generating OTP.");
+      }
+    } catch (error) {
+      handleToasterOpen("error", "Failed! Something went wrong.");
+    }
   };
 
   return (
@@ -99,8 +152,9 @@ function CodeVerification() {
       style={{ height: "100vh" }}
     >
       <Container onSubmit={handleSubmit}>
+        <Toaster {...toasterState} />
         <LinkContainer>
-          <StyledLink to={"/forget-password"}>
+          <StyledLink to={"/sign-up"}>
             <StyledArrowBackIcon />
             Go Back
           </StyledLink>

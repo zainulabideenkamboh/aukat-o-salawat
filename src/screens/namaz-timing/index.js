@@ -293,18 +293,19 @@ function NamazTiming() {
       const config = {
         headers: {
           Authorization:
-            "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbGlhbW1hcmtoYW5iaXR3QGdtYWlsLmNvbSIsImlhdCI6MTY4NTk4NjMyOSwiZXhwIjoxNjg2MDcyNzI5fQ.2jQKYu2YfatTTHmF18deH7vT1pjHnFi3fnFS3voS7_A",
+            "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbGlhbW1hcmtoYW5iaXR3QGdtYWlsLmNvbSIsImlhdCI6MTY4ODQ3ODExMiwiZXhwIjoxNjg4NTY0NTEyfQ.MCvkdXsmkP1MyOgTZCEqydj8p1gvPtcGQyOdCthHgP8",
         },
       };
       try {
         const response = await axios.get(
-          "http://aukat-o-salawat-api.ap-northeast-1.elasticbeanstalk.com/api/v1/playlist/",
+          "https://salaat-app-391409.an.r.appspot.com/api/v1/playlist/",
           config
         );
+        console.log("Response api/v1/playlist/: ", response);
         if (response.status === 200) {
           const audioFiles = response.data.data.audios.map((audio) => ({
             name: audio.name.split("_")[0], // Extract the part before the underscore
-            url: `https://tajammulbucket123.s3.ap-northeast-1.amazonaws.com/${audio.name}`,
+            url: audio.url,
             musicId: audio.id,
             duration: audio.size,
             isFav: audio.isFav,
@@ -338,13 +339,12 @@ function NamazTiming() {
         };
 
         const response = await ApiClient.post(
-          `http://aukat-o-salawat-api.ap-northeast-1.elasticbeanstalk.com/api/v1/reminder/`,
+          `https://salaat-app-391409.an.r.appspot.com/api/v1/reminder/`,
           payload
         );
         const data = response.data;
-        // console.log("data.data is 1: ", data);
 
-        if (data.code === 200 && data.message === "Success") {
+        if (data.code === 200 && data.message === "SUCCESS") {
           // console.log("data.data is : ", data.data);
           // const timings = JSON.parse(data.data);
           // const updatedNamazTimings = Object.entries(timings).map(
@@ -353,6 +353,8 @@ function NamazTiming() {
           //     time,
           //   })
           // );
+          // console.log("data.data is x: ", data.data);
+
           setNamazTimings(data.data);
         }
 
@@ -449,7 +451,7 @@ function NamazTiming() {
     // console.log("type: ", audioType);
     // console.log("time: ", namaz.time);
     // console.log("isEnabled: ", isEnabled);
-    // console.log("Namaz: ", namaz.namaz);
+    // console.log("Namaz: ", namaz.audioUrl);
     // console.log("AdjustedTime : ", count);
 
     try {
@@ -460,13 +462,15 @@ function NamazTiming() {
         adjustedTime: count,
         isEnabled: isEnabled,
         namaz: namaz.namaz,
+        audioUrl: namaz.audioUrl,
       };
       const response = await ApiClient.post(
-        `http://aukat-o-salawat-api.ap-northeast-1.elasticbeanstalk.com/api/v1/reminder/save`,
+        `https://salaat-app-391409.an.r.appspot.com/api/v1/reminder/save`,
         payload
       );
-      // console.log("response here : ", response);
       const data = response.data;
+      // console.log("response here is: ", data);
+
       if (data.code === 200 && data.message === "SUCCESS") {
         handleToasterOpen("success", "Reminder saved successfully!");
       } else {
@@ -564,7 +568,7 @@ function NamazTiming() {
   const postFavoriteAudio = async (musicId) => {
     try {
       const response = await ApiClient.post(
-        `http://aukat-o-salawat-api.ap-northeast-1.elasticbeanstalk.com/api/v1/playlist/audio/fav/${musicId}`
+        `https://salaat-app-391409.an.r.appspot.com/api/v1/playlist/audio/fav/${musicId}`
       );
       const data = response.data;
       if (data.code === 200 && data.message === "SUCCESS") {
@@ -573,7 +577,7 @@ function NamazTiming() {
         handleToasterOpen("error", "Favorite audio failed. Please try again.");
       }
     } catch (error) {
-      console.log("Error saving favorite audios: ", error);
+      // console.log("Error saving favorite audios: ", error);
       handleToasterOpen(
         "error",
         "An error occurred while adding favorite audio. Please try again."
@@ -700,7 +704,7 @@ function NamazTiming() {
                         <BellIconButton
                           enabled={namaz.isEnabled}
                           onClick={() => {
-                            console.log("namaz.isEnabled : ", namaz.isEnabled);
+                            // console.log("namaz.isEnabled : ", namaz.isEnabled);
 
                             setNamazTime(namaz.time);
                             handleSetReminder(namaz, count, !namaz.isEnabled);

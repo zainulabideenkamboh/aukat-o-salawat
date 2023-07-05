@@ -53,7 +53,7 @@ function NamazMethod() {
     const fetchData = async () => {
       try {
         const response = await ApiClient.get(
-          "http://aukat-o-salawat-api.ap-northeast-1.elasticbeanstalk.com/api/v1/namaz/methods"
+          "https://salaat-app-391409.an.r.appspot.com/api/v1/namaz/methods"
         );
         const data = response.data;
 
@@ -94,7 +94,7 @@ function NamazMethod() {
 
     try {
       const response = await ApiClient.put(
-        `http://aukat-o-salawat-api.ap-northeast-1.elasticbeanstalk.com/api/v1/users/method?method=${selectedMethods[0]}&school=${selectedSchools[0]}`
+        `https://salaat-app-391409.an.r.appspot.com/api/v1/users/method?method=${selectedMethods[0]}&school=${selectedSchools[0]}`
       );
       const data = response.data;
       console.log("Resp : ", response.data);

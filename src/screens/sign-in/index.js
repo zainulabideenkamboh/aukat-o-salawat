@@ -110,7 +110,7 @@ function SignIn() {
       const { token } = response.data;
       localStorage.setItem("token", token);
       if (response.status === 200) {
-        navigate("/list");
+        navigate("/namaz-timing");
       } else {
         handleToasterOpen(
           "error",

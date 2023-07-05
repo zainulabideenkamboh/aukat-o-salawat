@@ -109,12 +109,12 @@ const Sidebar = ({ isOpen }) => {
           </ListItemIcon>
           <ListItemText primary="Playback Schedule" />
         </ListItem> */}
-        <ListItem button component={Link} to="/generate-code">
+        {/* <ListItem button component={Link} to="/generate-code">
           <ListItemIcon>
             <DeveloperModeIcon />
           </ListItemIcon>
           <ListItemText primary="Generate Code" />
-        </ListItem>
+        </ListItem> */}
         {/* ... remaining menu items ... */}
 
         <ListItem button onClick={handleSettingsMenuToggle}>
@@ -147,7 +147,7 @@ const Sidebar = ({ isOpen }) => {
           </List>
         </Collapse>
 
-        <ListItem button component={Link} to="/logout">
+        <ListItem button component={Link} to="/sign-in">
           <ListItemIcon>
             <LockIcon />
           </ListItemIcon>

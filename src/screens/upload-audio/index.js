@@ -52,12 +52,12 @@ function UploadAudio() {
         const config = {
           headers: {
             Authorization:
-              "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbGlhbW1hcmtoYW5iaXR3QGdtYWlsLmNvbSIsImlhdCI6MTY4NTk4NjMyOSwiZXhwIjoxNjg2MDcyNzI5fQ.2jQKYu2YfatTTHmF18deH7vT1pjHnFi3fnFS3voS7_A",
+              "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbGlhbW1hcmtoYW5iaXR3QGdtYWlsLmNvbSIsImlhdCI6MTY4ODQ3ODExMiwiZXhwIjoxNjg4NTY0NTEyfQ.MCvkdXsmkP1MyOgTZCEqydj8p1gvPtcGQyOdCthHgP8",
           },
         };
 
         const response = await axios.post(
-          "http://aukat-o-salawat-api.ap-northeast-1.elasticbeanstalk.com/api/v1/playlist/save",
+          "https://salaat-app-391409.an.r.appspot.com/api/v1/playlist/save",
           formData,
           config
         );

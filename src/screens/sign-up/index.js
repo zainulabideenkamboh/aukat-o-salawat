@@ -13,6 +13,8 @@ import PersonIcon from "@mui/icons-material/Person";
 import DesktopWindowsIcon from "@mui/icons-material/DesktopWindows";
 import { Link, useNavigate } from "react-router-dom";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import ApiClient from "../../services/ApiClient";
+import Toaster from "../../components/Toaster";
 
 const Container = styled("form")({
   padding: "32px",
@@ -76,8 +78,29 @@ function Signup() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [macAddress, setMacAddress] = useState("");
+  const [serialNumber, setSerialNumber] = useState("");
+  const [toasterState, setToasterState] = useState({
+    open: false,
+    type: "",
+    message: "",
+  });
   const navigate = useNavigate();
+
+  const handleToasterClose = () => {
+    setToasterState({
+      ...toasterState,
+      open: false,
+    });
+  };
+
+  const handleToasterOpen = (type, message) => {
+    setToasterState({
+      open: true,
+      type,
+      message,
+    });
+    setTimeout(handleToasterClose, 3000);
+  };
 
   const handleShowPasswordClick = () => {
     setShowPassword(!showPassword);
@@ -96,9 +119,9 @@ function Signup() {
     setLastName(event.target.value);
   };
 
-  const handleMacAddressChange = (event) => {
-    const mac = event.target.value;
-    setMacAddress(mac);
+  const handleSerialNumberChange = (event) => {
+    const value = event.target.value;
+    setSerialNumber(value);
   };
 
   const handleEmailChange = (event) => {
@@ -114,14 +137,34 @@ function Signup() {
     setConfirmPassword(event.target.value);
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    navigate("/code-verification");
-    // handle form submission
+    const payload = {
+      firstName,
+      lastName,
+      email,
+      serialNumber,
+      password,
+    };
+
+    try {
+      const response = await ApiClient.post("api/v1/auth/signup", payload);
+      console.log("SignUp Response : ", response);
+      if (response.status === 200) {
+        navigate("/code-verification", { state: { email } });
+      } else {
+        handleToasterOpen(
+          "error",
+          "An error occurred while creating your account."
+        );
+      }
+    } catch (error) {
+      handleToasterOpen("error", "Login Failed! Something went wrong.");
+    }
   };
 
   const isValidEmail = (email) => {
-    const re = /^[^\s@]+@[^\s@]+.[^\s@]+$/;
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return re.test(email);
   };
 
@@ -137,10 +180,8 @@ function Signup() {
     return regex.test(password);
   };
 
-  const isValidMacAddress = (mac) => {
-    // const re = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/;
-    // return re.test(mac);
-    return mac.length === 5;
+  const isValidSerialNumber = (serialNumber) => {
+    return serialNumber.length === 16;
   };
 
   const isFormValid = () => {
@@ -151,8 +192,8 @@ function Signup() {
       password.trim() !== "" &&
       confirmPassword === password &&
       isValidPassword(password) &&
-      isValidMacAddress(macAddress) &&
-      macAddress.trim() !== ""
+      isValidSerialNumber(serialNumber) &&
+      serialNumber.trim() !== ""
     );
   };
 
@@ -164,6 +205,7 @@ function Signup() {
       style={{ height: "100vh" }}
     >
       <Container onSubmit={handleSubmit}>
+        <Toaster {...toasterState} />
         <LinkContainer>
           <StyledLink to={"/sign-in"}>
             <StyledArrowBackIcon />
@@ -227,10 +269,10 @@ function Signup() {
           <Grid item xs={12}>
             <StyledTextField
               required
-              label="MAC Address"
+              label="Serial Number"
               variant="outlined"
-              value={macAddress}
-              onChange={handleMacAddressChange}
+              value={serialNumber}
+              onChange={handleSerialNumberChange}
               InputProps={{
                 startAdornment: (
                   <Icon>
@@ -238,9 +280,9 @@ function Signup() {
                   </Icon>
                 ),
               }}
-              error={!isValidMacAddress(macAddress)}
+              error={!isValidSerialNumber(serialNumber)}
               helperText={
-                !isValidMacAddress(macAddress) && "Invalid MAC address"
+                !isValidSerialNumber(serialNumber) && "Invalid serial number"
               }
             />
           </Grid>

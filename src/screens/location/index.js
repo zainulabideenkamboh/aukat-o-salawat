@@ -95,10 +95,10 @@ function Location() {
     console.log("Selected Item:", selectedItem);
     try {
       const response = await ApiClient.put(
-        `http://aukat-o-salawat-api.ap-northeast-1.elasticbeanstalk.com/api/v1/users/location?lat=${selectedItem.latitude}&lng=${selectedItem.longitude}`
+        `https://salaat-app-391409.an.r.appspot.com/api/v1/users/location?lat=${selectedItem.latitude}&lng=${selectedItem.longitude}`
       );
       const data = response.data;
-      console.log("Resp : ", response.data);
+      console.log("Response is : ", response.data);
 
       if (data.code === 200) {
         handleToasterOpen("success", "Location saved successfully!");

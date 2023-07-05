@@ -19,12 +19,12 @@ function FavoriteAudio() {
       const config = {
         headers: {
           Authorization:
-            "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbGlhbW1hcmtoYW5iaXR3QGdtYWlsLmNvbSIsImlhdCI6MTY4NTk4NjMyOSwiZXhwIjoxNjg2MDcyNzI5fQ.2jQKYu2YfatTTHmF18deH7vT1pjHnFi3fnFS3voS7_A",
+            "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbGlhbW1hcmtoYW5iaXR3QGdtYWlsLmNvbSIsImlhdCI6MTY4ODQ3ODExMiwiZXhwIjoxNjg4NTY0NTEyfQ.MCvkdXsmkP1MyOgTZCEqydj8p1gvPtcGQyOdCthHgP8",
         },
       };
       try {
         const response = await axios.get(
-          "http://aukat-o-salawat-api.ap-northeast-1.elasticbeanstalk.com/api/v1/playlist/audio/fav",
+          "https://salaat-app-391409.an.r.appspot.com/api/v1/playlist/audio/fav",
           config
         );
         console.log("response is here: ", response);
@@ -32,7 +32,7 @@ function FavoriteAudio() {
         if (response.status === 200) {
           const audioFiles = response.data.data.map((audio) => ({
             name: audio.name.split("_")[0], // Extract the part before the underscore
-            url: `https://tajammulbucket123.s3.ap-northeast-1.amazonaws.com/${audio.name}`,
+            url: audio.url,
           }));
           setAudioList(audioFiles);
           setLoading(false);
