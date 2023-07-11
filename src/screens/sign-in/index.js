@@ -15,6 +15,7 @@ import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import ApiClient from "../../services/ApiClient";
 import Toaster from "../../components/Toaster";
+import axios from "axios";
 
 const Container = styled("form")({
   padding: "32px",
@@ -56,6 +57,8 @@ const RememberMe = styled(FormControlLabel)({
   alignSelf: "flex-start",
   marginRight: "auto",
 });
+
+const API_BASE_URL = process.env.REACT_APP_URL;
 
 function SignIn() {
   const [email, setEmail] = useState("");
@@ -103,10 +106,14 @@ function SignIn() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const response = await ApiClient.post("api/v1/auth/authenticate", {
-        email,
-        password,
-      });
+      const response = await axios.post(
+        `${API_BASE_URL}api/v1/auth/authenticate`,
+        {
+          email,
+          password,
+        }
+      );
+      console.log("Response Sign in : ", response.data);
       const { token } = response.data;
       localStorage.setItem("token", token);
       if (response.status === 200) {

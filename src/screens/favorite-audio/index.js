@@ -9,6 +9,7 @@ import {
 } from "@mui/material";
 import Layout from "../../components/Layout";
 import axios from "axios";
+import ApiClient from "../../services/ApiClient";
 
 function FavoriteAudio() {
   const [audioList, setAudioList] = useState([]);
@@ -23,9 +24,8 @@ function FavoriteAudio() {
         },
       };
       try {
-        const response = await axios.get(
-          "https://salaat-app-391409.an.r.appspot.com/api/v1/playlist/audio/fav",
-          config
+        const response = await ApiClient.get(
+          "https://salaat-app-391409.an.r.appspot.com/api/v1/playlist/audio/fav"
         );
         console.log("response is here: ", response);
 

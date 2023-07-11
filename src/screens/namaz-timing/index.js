@@ -297,9 +297,8 @@ function NamazTiming() {
         },
       };
       try {
-        const response = await axios.get(
-          "https://salaat-app-391409.an.r.appspot.com/api/v1/playlist/",
-          config
+        const response = await ApiClient.get(
+          "https://salaat-app-391409.an.r.appspot.com/api/v1/playlist/"
         );
         console.log("Response api/v1/playlist/: ", response);
         if (response.status === 200) {

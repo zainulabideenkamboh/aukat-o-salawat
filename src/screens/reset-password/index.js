@@ -85,7 +85,7 @@ function ResetPassword() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    navigate("/home");
+    navigate("/sign-in");
     // Your reset password submit logic here
   };
 

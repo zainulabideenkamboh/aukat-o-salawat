@@ -16,7 +16,6 @@ import {
 } from "@mui/material";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import PauseIcon from "@mui/icons-material/Pause";
-
 import ApiClient from "../../services/ApiClient";
 
 import axios from "axios";
@@ -36,9 +35,8 @@ function PlaybackSchedule() {
         },
       };
       try {
-        const response = await axios.get(
-          "https://salaat-app-391409.an.r.appspot.com/api/v1/reminder/",
-          config
+        const response = await ApiClient.get(
+          "https://salaat-app-391409.an.r.appspot.com/api/v1/reminder/"
         );
         console.log("response is here bro: ", response);
 

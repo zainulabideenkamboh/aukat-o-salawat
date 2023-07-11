@@ -74,7 +74,7 @@ function CodeVerification() {
   const navigate = useNavigate();
   const location = useLocation();
   const { email } = location.state ?? {};
-  console.log("Email 1 : ", email);
+  const [userEmail, setUserEmail] = useState(email);
   const [toasterState, setToasterState] = useState({
     open: false,
     type: "",
@@ -108,15 +108,15 @@ function CodeVerification() {
   };
 
   const handleSubmit = async (event) => {
-    console.log("Email 2 : ", email);
     const concatenatedString = code.join("");
     event.preventDefault();
     try {
       const response = await ApiClient.post("api/v1/otp/validate", {
-        email,
+        email: userEmail,
         code: concatenatedString,
       });
-      if (response.data.status === 200) {
+      console.log("Hello data : ", response.data);
+      if (response.data.code === 200) {
         navigate("/sign-in");
       } else {
         handleToasterOpen("error", "An error occurred while validating OTP.");
@@ -128,9 +128,11 @@ function CodeVerification() {
 
   const resendCodeHandler = async () => {
     try {
-      console.log("Email 3 : ", email);
+      console.log("Email 3 : ", userEmail);
 
-      const response = await ApiClient.post("api/v1/otp/generate", { email });
+      const response = await ApiClient.post("api/v1/otp/generate", {
+        email: userEmail,
+      });
       if (response.status === 200) {
         handleToasterOpen(
           "success",

@@ -56,10 +56,9 @@ function UploadAudio() {
           },
         };
 
-        const response = await axios.post(
+        const response = await ApiClient.post(
           "https://salaat-app-391409.an.r.appspot.com/api/v1/playlist/save",
-          formData,
-          config
+          formData
         );
 
         if (response.status === 200) {

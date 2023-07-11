@@ -9,6 +9,7 @@ import {
 } from "@mui/material";
 import Layout from "../../components/Layout";
 import axios from "axios";
+import ApiClient from "../../services/ApiClient";
 
 function UploadedAudio() {
   const [audioList, setAudioList] = useState([]);
@@ -23,12 +24,12 @@ function UploadedAudio() {
         },
       };
       try {
-        const response = await axios.get(
-          "https://salaat-app-391409.an.r.appspot.com/api/v1/playlist/",
-          config
+        const response = await ApiClient.get(
+          "https://salaat-app-391409.an.r.appspot.com/api/v1/playlist/"
         );
 
         if (response.status === 200) {
+          console.log("response here : ", response);
           const audioFiles = response.data.data.audios.map((audio) => ({
             name: audio.name.split("_")[0], // Extract the part before the underscore
             url: audio.url,

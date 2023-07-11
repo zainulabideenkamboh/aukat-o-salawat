@@ -151,7 +151,10 @@ const Sidebar = ({ isOpen }) => {
           <ListItemIcon>
             <LockIcon />
           </ListItemIcon>
-          <ListItemText primary="Logout" />
+          <ListItemText
+            primary="Logout"
+            onClick={() => localStorage.removeItem("token")}
+          />
         </ListItem>
       </SidebarList>
     </SidebarContainer>
