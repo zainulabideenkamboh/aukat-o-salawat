@@ -65,7 +65,7 @@ function Configuration() {
   const handleUpdate = async () => {
     try {
       const response = await ApiClient.put(
-        `https://salaat-app-391409.an.r.appspot.com/api/v1/users/serialnumber?serial=${serialNumber}`
+        `api/v1/users/serialnumber?serial=${serialNumber}`
       );
       const data = response.data;
       if (data.code === 200) {

@@ -151,7 +151,7 @@ function Signup() {
       const response = await ApiClient.post("api/v1/auth/signup", payload);
       console.log("SignUp Response : ", response);
       if (response.status === 200) {
-        navigate("/code-verification", { state: { email } });
+        navigate("/code-verification", { state: { userEmail: email } });
       } else {
         handleToasterOpen(
           "error",

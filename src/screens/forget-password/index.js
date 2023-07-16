@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { styled } from "@mui/material/styles";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
@@ -6,6 +6,8 @@ import Button from "@mui/material/Button";
 import EmailIcon from "@mui/icons-material/Email";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import { Link, useNavigate } from "react-router-dom";
+import ApiClient from "../../services/ApiClient";
+import Toaster from "../../components/Toaster";
 
 const Container = styled("form")({
   padding: "32px",
@@ -65,6 +67,27 @@ function ForgetPassword() {
   const [email, setEmail] = useState("");
   const [isValid, setIsValid] = useState(false);
   const navigate = useNavigate();
+  const [toasterState, setToasterState] = useState({
+    open: false,
+    type: "",
+    message: "",
+  });
+
+  const handleToasterClose = () => {
+    setToasterState({
+      ...toasterState,
+      open: false,
+    });
+  };
+
+  const handleToasterOpen = (type, message) => {
+    setToasterState({
+      open: true,
+      type,
+      message,
+    });
+    setTimeout(handleToasterClose, 3000);
+  };
 
   const handleEmailChange = (event) => {
     const value = event.target.value;
@@ -72,11 +95,22 @@ function ForgetPassword() {
     setIsValid(validateEmail(value));
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    navigate("/code-verification");
-
-    // alert("Submitted");
+    try {
+      const response = await ApiClient.post("api/v1/otp/generate", {
+        email,
+      });
+      if (response.status === 200) {
+        navigate("/code-verification", {
+          state: { isForgetPassword: true, userEmail: email },
+        });
+      } else {
+        handleToasterOpen("error", "An error occurred while generating OTP.");
+      }
+    } catch (error) {
+      handleToasterOpen("error", "Failed! Something went wrong.");
+    }
   };
 
   const validateEmail = (email) => {
@@ -92,6 +126,7 @@ function ForgetPassword() {
       style={{ height: "100vh" }}
     >
       <Container onSubmit={handleSubmit}>
+        <Toaster {...toasterState} />
         <LinkContainer>
           <StyledLink to={"/sign-in"}>
             <StyledArrowBackIcon />

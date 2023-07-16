@@ -10,7 +10,6 @@ import {
 import { Link } from "react-router-dom";
 
 import MosqueIcon from "@mui/icons-material/Mosque";
-import DeveloperModeIcon from "@mui/icons-material/DeveloperMode";
 import {
   ExpandLess as ExpandLessIcon,
   ExpandMore as ExpandMoreIcon,
@@ -23,7 +22,7 @@ import {
   Tune as TuneIcon,
   ExitToApp as ExitToAppIcon,
 } from "@mui/icons-material";
-import WatchLaterIcon from "@mui/icons-material/WatchLater";
+import PasswordIcon from "@mui/icons-material/Password";
 import LockIcon from "@mui/icons-material/Lock";
 import ExploreIcon from "@mui/icons-material/Explore";
 import LocalLibraryIcon from "@mui/icons-material/LocalLibrary";
@@ -144,6 +143,12 @@ const Sidebar = ({ isOpen }) => {
               </ListItemIcon>
               <ListItemText primary="Configuration" />
             </ListItem>
+            <ListItem button component={Link} to="/reset-password">
+              <ListItemIcon>
+                <PasswordIcon />
+              </ListItemIcon>
+              <ListItemText primary="Change Password" />
+            </ListItem>
           </List>
         </Collapse>
 
@@ -153,7 +158,10 @@ const Sidebar = ({ isOpen }) => {
           </ListItemIcon>
           <ListItemText
             primary="Logout"
-            onClick={() => localStorage.removeItem("token")}
+            onClick={() => {
+              localStorage.removeItem("token");
+              localStorage.removeItem("useEmail");
+            }}
           />
         </ListItem>
       </SidebarList>

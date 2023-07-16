@@ -35,9 +35,7 @@ function PlaybackSchedule() {
         },
       };
       try {
-        const response = await ApiClient.get(
-          "https://salaat-app-391409.an.r.appspot.com/api/v1/reminder/"
-        );
+        const response = await ApiClient.get("api/v1/reminder/");
         console.log("response is here bro: ", response);
 
         if (response.status === 200) {

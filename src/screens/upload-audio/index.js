@@ -56,10 +56,7 @@ function UploadAudio() {
           },
         };
 
-        const response = await ApiClient.post(
-          "https://salaat-app-391409.an.r.appspot.com/api/v1/playlist/save",
-          formData
-        );
+        const response = await ApiClient.post("api/v1/playlist/save", formData);
 
         if (response.status === 200) {
           handleToasterOpen("success", "File uploaded successfully!");

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
@@ -73,8 +73,10 @@ function CodeVerification() {
   const [code, setCode] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
-  const { email } = location.state ?? {};
-  const [userEmail, setUserEmail] = useState(email);
+  const { userEmail } = location.state ?? {};
+  const [email, setEmail] = useState(userEmail);
+  const isForgetPassword = location.state?.isForgetPassword || false;
+
   const [toasterState, setToasterState] = useState({
     open: false,
     type: "",
@@ -99,10 +101,11 @@ function CodeVerification() {
 
   const handleCodeChange = (event, index) => {
     let value = event.target.value;
-    value = value.replace(/\D/g, ""); // Remove non-numeric characters
+    value = value.replace(/\D/g, ""); // Remove non-numeric characters using regular expression
+    value = value.slice(0, 1); // Only take the first character (i.e., restrict to single-digit input)
     setCode((prevCode) => {
       const newCode = [...prevCode];
-      newCode[index] = value[value.length - 1]; // Store the last character
+      newCode[index] = value;
       return newCode;
     });
   };
@@ -112,12 +115,14 @@ function CodeVerification() {
     event.preventDefault();
     try {
       const response = await ApiClient.post("api/v1/otp/validate", {
-        email: userEmail,
+        email,
         code: concatenatedString,
       });
       console.log("Hello data : ", response.data);
       if (response.data.code === 200) {
-        navigate("/sign-in");
+        navigate(isForgetPassword ? "/reset-password" : "/sign-in", {
+          state: { userEmail: email, goBackToSignIn: true },
+        });
       } else {
         handleToasterOpen("error", "An error occurred while validating OTP.");
       }
@@ -128,10 +133,8 @@ function CodeVerification() {
 
   const resendCodeHandler = async () => {
     try {
-      console.log("Email 3 : ", userEmail);
-
       const response = await ApiClient.post("api/v1/otp/generate", {
-        email: userEmail,
+        email,
       });
       if (response.status === 200) {
         handleToasterOpen(
@@ -146,6 +149,10 @@ function CodeVerification() {
     }
   };
 
+  useEffect(() => {
+    resendCodeHandler();
+  }, []);
+
   return (
     <Grid
       container
@@ -156,7 +163,7 @@ function CodeVerification() {
       <Container onSubmit={handleSubmit}>
         <Toaster {...toasterState} />
         <LinkContainer>
-          <StyledLink to={"/sign-up"}>
+          <StyledLink to={isForgetPassword ? "/forget-password" : "/sign-up"}>
             <StyledArrowBackIcon />
             Go Back
           </StyledLink>

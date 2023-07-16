@@ -95,7 +95,7 @@ function Location() {
     console.log("Selected Item:", selectedItem);
     try {
       const response = await ApiClient.put(
-        `https://salaat-app-391409.an.r.appspot.com/api/v1/users/location?lat=${selectedItem.latitude}&lng=${selectedItem.longitude}`
+        `api/v1/users/location?lat=${selectedItem.latitude}&lng=${selectedItem.longitude}`
       );
       const data = response.data;
       console.log("Response is : ", response.data);

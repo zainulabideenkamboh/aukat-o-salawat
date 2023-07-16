@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import Layout from "../../components/Layout";
 import {
   Grid,
@@ -15,7 +15,6 @@ import {
   Paper,
   TextField,
   CircularProgress,
-  FormControlLabel,
   IconButton,
   Checkbox,
 } from "@mui/material";
@@ -26,7 +25,6 @@ import ApiClient from "../../services/ApiClient";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import Toaster from "../../components/Toaster";
-import axios from "axios";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
@@ -61,20 +59,12 @@ const GreenIconButton = styled(IconButton)({
 
 const YellowIconButton = styled(Button)(({ enabled }) => ({
   color: enabled ? "#1976d2" : "gray",
-  // backgroundColor: enabled ? "yellow" : "gray",
-  // "&:hover": {
-  //   backgroundColor: "gray",
-  // },
   "&:active": {
     color: enabled ? "#1976d2" : "gray",
   },
 }));
 
-const CounterField = ({
-  initialValue,
-  onChangeCounterHandler,
-  // onClickHandleSetReminder,
-}) => {
+const CounterField = ({ initialValue, onChangeCounterHandler }) => {
   const [count, setCount] = useState(initialValue);
   const [isInitialRender, setIsInitialRender] = useState(true);
 
@@ -91,9 +81,6 @@ const CounterField = ({
     if (!isNaN(value) && value >= 0) {
       setCount(value);
     }
-    // setTimeout(() => {
-    //   onClickHandleSetReminder();
-    // }, 1000);
   };
 
   useEffect(() => {
@@ -139,10 +126,6 @@ const BellIcon = styled(({ enabled, onClick, ...rest }) => (
   </YellowIconButton>
 ))(({ enabled }) => ({
   color: enabled ? "#1976d2" : "gray",
-  // backgroundColor: enabled ? "yellow" : "gray",
-  // "&:hover": {
-  //   backgroundColor: "gray",
-  // },
   "&:active": {
     color: enabled ? "#1976d2" : "gray",
   },
@@ -152,7 +135,6 @@ const BellIconButton = ({ enabled, onClick }) => {
   const [isBellEnabled, setIsBellEnabled] = useState(enabled);
 
   const handleBellClick = () => {
-    // console.log("handleBellClick is called");
     setIsBellEnabled(!isBellEnabled);
   };
 
@@ -168,7 +150,6 @@ const BellIconButton = ({ enabled, onClick }) => {
 };
 
 function NamazTiming() {
-  const [selectedNamaz, setSelectedNamaz] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState("Spotify Audio");
   const [searchValue, setSearchValue] = useState("");
@@ -179,14 +160,12 @@ function NamazTiming() {
   const [filteredUploadedMusic, setFilteredUploadedMusic] = useState([]);
   const [filteredSpotifyAudioData, setFilteredSpotifyAudioData] = useState([]);
   const [namazTimings, setNamazTimings] = useState([]);
-  const [loading, setLoading] = useState(true); // State for tracking loading status
-  const [audioList, setAudioList] = useState([]);
-  const [favoriteAudios, setFavoriteAudios] = useState([]); // State for storing favorite audios
+  const [loading, setLoading] = useState(true);
+  const [favoriteAudios, setFavoriteAudios] = useState([]);
   const [timeModalOpen, setTimeModalOpen] = useState(false);
   const [hours, setHours] = useState("");
   const [minutes, setMinutes] = useState("");
   const [seconds, setSeconds] = useState("");
-  const [validationError, setValidationError] = useState("");
   const [validationHoursError, setValidationHoursError] = useState("");
   const [validationMinutesError, setValidationMinutesError] = useState("");
   const [validationSecondsError, setValidationSecondsError] = useState("");
@@ -196,7 +175,6 @@ function NamazTiming() {
     message: "",
   });
   const [audioType, setAudioType] = useState("");
-  const [reminderEnabled, setReminderEnabled] = useState(false);
   const [audioName, setAudioName] = useState("");
   const [count, setCount] = useState(0);
   const [isChanged, setIsChanged] = useState(false);
@@ -225,33 +203,9 @@ function NamazTiming() {
     setSeconds("00");
   };
 
-  const handleTimeOpenModal = (time) => {
-    setTimeModalOpen(true);
-    setNamazTime(time);
-  };
-
   const handleTimeCloseModal = () => {
     setTimeModalOpen(false);
-    // setHours("");
-    // setMinutes("");
-    // setSeconds("");
-    setValidationError("");
   };
-
-  // const handleSaveNamazTime = () => {
-  //   if (!validateTime(hours, minutes, seconds)) {
-  //     setValidationError("Invalid format.");
-  //     return;
-  //   }
-
-  //   const time = `${hours.padStart(2, "0")}:${minutes.padStart(
-  //     2,
-  //     "0"
-  //   )}:${seconds.padStart(2, "0")}`;
-  //   console.log("Namaz time saved:", time);
-
-  //   handleCloseModal();
-  // };
 
   const validateTime = (h, m, s) => {
     const validHours = h >= 0 && h <= 23;
@@ -290,20 +244,11 @@ function NamazTiming() {
 
   useEffect(() => {
     const fetchAudioList = async () => {
-      const config = {
-        headers: {
-          Authorization:
-            "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbGlhbW1hcmtoYW5iaXR3QGdtYWlsLmNvbSIsImlhdCI6MTY4ODQ3ODExMiwiZXhwIjoxNjg4NTY0NTEyfQ.MCvkdXsmkP1MyOgTZCEqydj8p1gvPtcGQyOdCthHgP8",
-        },
-      };
       try {
-        const response = await ApiClient.get(
-          "https://salaat-app-391409.an.r.appspot.com/api/v1/playlist/"
-        );
-        console.log("Response api/v1/playlist/: ", response);
+        const response = await ApiClient.get("api/v1/playlist/");
         if (response.status === 200) {
           const audioFiles = response.data.data.audios.map((audio) => ({
-            name: audio.name.split("_")[0], // Extract the part before the underscore
+            name: audio.name.split("_")[0],
             url: audio.url,
             musicId: audio.id,
             duration: audio.size,
@@ -316,10 +261,10 @@ function NamazTiming() {
           setUploadedMusicData(updatedAudioFiles);
           setLoading(false);
         } else {
-          console.log("Failed to fetch audio list.");
+          handleToasterOpen("error", "Failed to fetch audio list.");
         }
       } catch (error) {
-        console.log("Error fetching audio list: ", error);
+        handleToasterOpen("error", "Failed to fetch audio list.");
       }
     };
 
@@ -337,30 +282,15 @@ function NamazTiming() {
           timeZone: "2023-05-20",
         };
 
-        const response = await ApiClient.post(
-          `https://salaat-app-391409.an.r.appspot.com/api/v1/reminder/`,
-          payload
-        );
+        const response = await ApiClient.post(`api/v1/reminder/`, payload);
         const data = response.data;
-
         if (data.code === 200 && data.message === "SUCCESS") {
-          // console.log("data.data is : ", data.data);
-          // const timings = JSON.parse(data.data);
-          // const updatedNamazTimings = Object.entries(timings).map(
-          //   ([name, time]) => ({
-          //     name,
-          //     time,
-          //   })
-          // );
-          // console.log("data.data is x: ", data.data);
-
           setNamazTimings(data.data);
         }
-
-        setLoading(false); // Set loading to false after data is fetched
+        setLoading(false);
       } catch (error) {
-        console.log("Error fetching namaz timings: ", error);
-        setLoading(false); // Set loading to false even if there's an error
+        handleToasterOpen("error", "Error fetching namaz timings.");
+        setLoading(false);
       }
     };
 
@@ -384,7 +314,7 @@ function NamazTiming() {
               duration: track.duration_ms,
               image: track.album.images[0].url,
               previewUrl: track.preview_url,
-              isPlaying: false, // Add isPlaying state for each track
+              isPlaying: false,
             };
           });
           return {
@@ -418,8 +348,7 @@ function NamazTiming() {
     setFilteredUploadedMusic(uploadedMusicData);
   }, [uploadedMusicData]);
 
-  const handleSelectAudio = (namazName) => {
-    setSelectedNamaz(namazName);
+  const handleSelectAudio = () => {
     setModalOpen(true);
   };
 
@@ -439,23 +368,15 @@ function NamazTiming() {
   };
 
   const handleSaveMusic = () => {
-    // console.log(`Selected audio: ${audioName}`);
     handleCloseModal();
   };
 
   const handleSetReminder = async (namaz, count, isEnabled) => {
-    // handleToasterOpen("success", "Reminder set successfully!");
-
-    // console.log("audioFile: ", audioName);
-    // console.log("type: ", audioType);
-    // console.log("time: ", namaz.time);
-    // console.log("isEnabled: ", isEnabled);
-    // console.log("Namaz: ", namaz.audioUrl);
-    // console.log("AdjustedTime : ", count);
-
     try {
+      const audio =
+        audioType === "spotify" ? selectedAudio + ".mp3" : audioName;
       const payload = {
-        audioFile: audioName,
+        audioFile: audio,
         type: audioType,
         time: namaz.time,
         adjustedTime: count,
@@ -463,33 +384,19 @@ function NamazTiming() {
         namaz: namaz.namaz,
         audioUrl: namaz.audioUrl,
       };
-      const response = await ApiClient.post(
-        `https://salaat-app-391409.an.r.appspot.com/api/v1/reminder/save`,
-        payload
-      );
+      const response = await ApiClient.post(`api/v1/reminder/save`, payload);
       const data = response.data;
-      // console.log("response here is: ", data);
-
-      if (data.code === 200 && data.message === "SUCCESS") {
+      if (data.code === 200) {
         handleToasterOpen("success", "Reminder saved successfully!");
       } else {
         handleToasterOpen("error", "Reminder failed. Please try again.");
       }
     } catch (error) {
-      console.log("Error saving reminder: ", error);
       handleToasterOpen(
         "error",
         "An error occurred while saving reminder. Please try again."
       );
     }
-
-    // console.log("audioFile: ", audioName);
-    // console.log("type: ", audioType);
-    // console.log("time: ", namaz.time);
-    // console.log("isEnabled: ", namaz.isEnabled);
-    // console.log("Namaz: ", namaz.namaz);
-    // console.log("AdjustedTime : ", count);
-    // alert("Reminder has been set");
   };
 
   const handlePlayPause = (previewUrl, trackId) => {
@@ -567,16 +474,15 @@ function NamazTiming() {
   const postFavoriteAudio = async (musicId) => {
     try {
       const response = await ApiClient.post(
-        `https://salaat-app-391409.an.r.appspot.com/api/v1/playlist/audio/fav/${musicId}`
+        `api/v1/playlist/audio/fav/${musicId}`
       );
       const data = response.data;
-      if (data.code === 200 && data.message === "SUCCESS") {
+      if (data.code === 200) {
         handleToasterOpen("success", "Favorite audio added successfully!");
       } else {
         handleToasterOpen("error", "Favorite audio failed. Please try again.");
       }
     } catch (error) {
-      // console.log("Error saving favorite audios: ", error);
       handleToasterOpen(
         "error",
         "An error occurred while adding favorite audio. Please try again."
@@ -589,7 +495,7 @@ function NamazTiming() {
       if (music.musicId === musicId) {
         return {
           ...music,
-          isFav: !music.isFav, // Toggle the isFav property
+          isFav: !music.isFav,
         };
       }
       return music;
@@ -598,19 +504,14 @@ function NamazTiming() {
     setUploadedMusicData(updatedMusicData);
 
     if (favoriteAudios.includes(musicId)) {
-      // If already a favorite, remove it from the list
       setFavoriteAudios(favoriteAudios.filter((id) => id !== musicId));
-      // console.log("I am checked : ", favoriteAudios);
       postFavoriteAudio(musicId);
     } else {
-      // If not a favorite, add it to the list
       setFavoriteAudios([...favoriteAudios, musicId]);
-      // console.log("I am unchecked : ", musicId);
     }
   };
 
   useEffect(() => {
-    // Filter Spotify audio based on the search value
     const filteredSpotifyAudio = spotifyAudioData.map((playlist) => ({
       ...playlist,
       tracks: playlist.tracks.filter((track) =>
@@ -619,7 +520,6 @@ function NamazTiming() {
     }));
     setFilteredSpotifyAudioData(filteredSpotifyAudio);
 
-    // Filter uploaded music based on the search value
     const filteredMusic = uploadedMusicData.filter((music) =>
       music.name.toLowerCase().includes(searchValue.toLowerCase())
     );
@@ -642,7 +542,7 @@ function NamazTiming() {
         <Toaster {...toasterState} />
         <Typography variant="h4">Namaz Timing</Typography>
         <Box p={2}>
-          {loading ? ( // Show the loader if the loading state is true
+          {loading ? (
             <Box
               sx={{
                 display: "flex",
@@ -676,12 +576,10 @@ function NamazTiming() {
                           variant="outlined"
                           color="primary"
                           size="small"
-                          onClick={() => handleSelectAudio(namaz.name)}
+                          onClick={handleSelectAudio}
                         >
                           Select Audio
                         </Button>
-
-                        {/* {audioName} */}
                       </TableCell>
                       <TableCell>
                         <CounterField
@@ -692,19 +590,12 @@ function NamazTiming() {
                             handleSetReminder(namaz, count, namaz.isEnabled);
                             setIsChanged((prev) => !prev);
                           }}
-                          // onClickHandleSetReminder={(count) => {
-                          //   console.log("I am count : ", count);
-                          //   setNamazTime(namaz.time);
-                          //   handleSetReminder(namaz, count);
-                          // }}
                         />
                       </TableCell>
                       <TableCell>
                         <BellIconButton
                           enabled={namaz.isEnabled}
                           onClick={() => {
-                            // console.log("namaz.isEnabled : ", namaz.isEnabled);
-
                             setNamazTime(namaz.time);
                             handleSetReminder(namaz, count, !namaz.isEnabled);
                             setIsChanged((prev) => !prev);
@@ -918,7 +809,6 @@ function NamazTiming() {
                             size="small"
                             onClick={() => {
                               handleUploadedPlayPause(music.url, music.id);
-                              // console.log("isPlaying : ", music.isPlaying);
                             }}
                           >
                             {music.isPlaying ? (

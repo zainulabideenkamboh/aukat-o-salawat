@@ -1,7 +1,6 @@
 import axios from "axios";
 
 const API_BASE_URL = process.env.REACT_APP_URL;
-// const API_BASE_URL = "https://salaat-app-391409.an.r.appspot.com/";
 
 const apiClient = () => {
   const defaultOptions = {

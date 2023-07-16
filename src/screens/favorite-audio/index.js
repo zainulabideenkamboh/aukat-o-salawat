@@ -24,9 +24,7 @@ function FavoriteAudio() {
         },
       };
       try {
-        const response = await ApiClient.get(
-          "https://salaat-app-391409.an.r.appspot.com/api/v1/playlist/audio/fav"
-        );
+        const response = await ApiClient.get("api/v1/playlist/audio/fav");
         console.log("response is here: ", response);
 
         if (response.status === 200) {

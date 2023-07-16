@@ -52,13 +52,14 @@ function NamazMethod() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await ApiClient.get(
-          "https://salaat-app-391409.an.r.appspot.com/api/v1/namaz/methods"
-        );
+        const response = await ApiClient.get("api/v1/namaz/methods");
         const data = response.data;
 
-        if (data.code === 200 && data.message === "SUCCESS") {
-          setSelectedMethods([data.data.methods[0].id]);
+        if (data.code === 200) {
+          const defaultObject = data.data.methods.find(
+            (item) => item.isDefault === true
+          );
+          setSelectedMethods([defaultObject?.id]);
           setMethods(data.data.methods);
 
           setSelectedSchools([data.data.schools[0].id]);
@@ -94,7 +95,9 @@ function NamazMethod() {
 
     try {
       const response = await ApiClient.put(
-        `https://salaat-app-391409.an.r.appspot.com/api/v1/users/method?method=${selectedMethods[0]}&school=${selectedSchools[0]}`
+        `pi/v1/users/method?method=${selectedMethods[0] + 1}&school=${
+          selectedSchools[0]
+        }`
       );
       const data = response.data;
       console.log("Resp : ", response.data);

@@ -17,16 +17,8 @@ function UploadedAudio() {
 
   useEffect(() => {
     const fetchAudioList = async () => {
-      const config = {
-        headers: {
-          Authorization:
-            "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbGlhbW1hcmtoYW5iaXR3QGdtYWlsLmNvbSIsImlhdCI6MTY4ODQ3ODExMiwiZXhwIjoxNjg4NTY0NTEyfQ.MCvkdXsmkP1MyOgTZCEqydj8p1gvPtcGQyOdCthHgP8",
-        },
-      };
       try {
-        const response = await ApiClient.get(
-          "https://salaat-app-391409.an.r.appspot.com/api/v1/playlist/"
-        );
+        const response = await ApiClient.get("api/v1/playlist/");
 
         if (response.status === 200) {
           console.log("response here : ", response);
