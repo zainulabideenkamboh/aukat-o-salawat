@@ -25,6 +25,8 @@ import ApiClient from "../../services/ApiClient";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import Toaster from "../../components/Toaster";
+
+//
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
@@ -264,7 +266,7 @@ function NamazTiming() {
           handleToasterOpen("error", "Failed to fetch audio list.");
         }
       } catch (error) {
-        handleToasterOpen("error", "Failed to fetch audio list.");
+        // handleToasterOpen("error", "Something went wrong.");
       }
     };
 
@@ -374,7 +376,7 @@ function NamazTiming() {
   const handleSetReminder = async (namaz, count, isEnabled) => {
     try {
       const audio =
-        audioType === "spotify" ? selectedAudio + ".mp3" : audioName;
+        audioType === "spotify" ? selectedAudio + ".mp3" : audioName + ".mp3";
       const payload = {
         audioFile: audio,
         type: audioType,

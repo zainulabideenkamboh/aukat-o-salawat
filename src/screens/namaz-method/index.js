@@ -64,12 +64,10 @@ function NamazMethod() {
 
           setSelectedSchools([data.data.schools[0].id]);
           setSchools(data.data.schools);
-        } else {
         }
-
         setLoading(false); // Set loading to false after data is fetched
       } catch (error) {
-        console.log("Error fetching namaz timings: ", error);
+        handleToasterOpen("error", "Error fetching namaz timings");
         setLoading(false); // Set loading to false even if there's an error
       }
     };
@@ -86,13 +84,6 @@ function NamazMethod() {
   };
 
   const handleSave = async () => {
-    console.log(
-      "selectedSchools : ",
-      selectedSchools[0],
-      " | selectedMethods : ",
-      selectedMethods[0]
-    );
-
     try {
       const response = await ApiClient.put(
         `pi/v1/users/method?method=${selectedMethods[0] + 1}&school=${
@@ -100,8 +91,6 @@ function NamazMethod() {
         }`
       );
       const data = response.data;
-      console.log("Resp : ", response.data);
-
       if (data.code === 200) {
         handleToasterOpen("success", "School and Method saved successfully!");
       } else {
@@ -111,7 +100,6 @@ function NamazMethod() {
         );
       }
     } catch (error) {
-      console.log("Error fetching namaz timings: ", error);
       handleToasterOpen(
         "error",
         "An error occurred while saving school and method. Please try again."

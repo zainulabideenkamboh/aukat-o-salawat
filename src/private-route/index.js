@@ -9,7 +9,6 @@ function PrivateRoute({ path, element: Element }) {
   useEffect(() => {
     const checkAuthentication = async () => {
       const token = localStorage.getItem("token");
-      console.log("Token: ", token);
       if (token) {
         // Perform token validation here
         setIsAuthenticated(true);
@@ -21,8 +20,6 @@ function PrivateRoute({ path, element: Element }) {
 
     checkAuthentication();
   }, []);
-
-  console.log("isAuthenticated: ", isAuthenticated);
 
   if (!tokenChecked) {
     // Render a loading state while token retrieval is in progress

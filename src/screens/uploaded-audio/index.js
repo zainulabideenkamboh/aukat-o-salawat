@@ -8,12 +8,33 @@ import {
   CircularProgress,
 } from "@mui/material";
 import Layout from "../../components/Layout";
-import axios from "axios";
 import ApiClient from "../../services/ApiClient";
+import Toaster from "../../components/Toaster";
 
 function UploadedAudio() {
   const [audioList, setAudioList] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [toasterState, setToasterState] = useState({
+    open: false,
+    type: "",
+    message: "",
+  });
+
+  const handleToasterClose = () => {
+    setToasterState({
+      ...toasterState,
+      open: false,
+    });
+  };
+
+  const handleToasterOpen = (type, message) => {
+    setToasterState({
+      open: true,
+      type,
+      message,
+    });
+    setTimeout(handleToasterClose, 3000);
+  };
 
   useEffect(() => {
     const fetchAudioList = async () => {
@@ -21,19 +42,17 @@ function UploadedAudio() {
         const response = await ApiClient.get("api/v1/playlist/");
 
         if (response.status === 200) {
-          console.log("response here : ", response);
           const audioFiles = response.data.data.audios.map((audio) => ({
             name: audio.name.split("_")[0], // Extract the part before the underscore
             url: audio.url,
           }));
-          console.log("audioFiles : ", response.data.data.audios[8]);
           setAudioList(audioFiles);
           setLoading(false);
         } else {
-          console.log("Failed to fetch audio list.");
+          handleToasterOpen("error", "Failed to fetch audio list.");
         }
       } catch (error) {
-        console.log("Error fetching audio list: ", error);
+        // handleToasterOpen("error", "Something went wrong.");
       }
     };
 
@@ -43,6 +62,7 @@ function UploadedAudio() {
   return (
     <Layout>
       <Grid item xs={12} sm={8} md={9}>
+        <Toaster {...toasterState} />
         <Typography variant="h4">Uploaded Audio</Typography>
         <Container
           maxWidth="lg"

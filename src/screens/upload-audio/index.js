@@ -64,7 +64,6 @@ function UploadAudio() {
           handleToasterOpen("error", "File upload failed. Please try again.");
         }
       } catch (error) {
-        console.log("Error uploading file: ", error);
         handleToasterOpen(
           "error",
           "An error occurred while uploading the file. Please try again."

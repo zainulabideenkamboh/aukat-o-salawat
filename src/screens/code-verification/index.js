@@ -116,9 +116,8 @@ function CodeVerification() {
     try {
       const response = await ApiClient.post("api/v1/otp/validate", {
         email,
-        code: concatenatedString,
+        otp: concatenatedString,
       });
-      console.log("Hello data : ", response.data);
       if (response.data.code === 200) {
         navigate(isForgetPassword ? "/reset-password" : "/sign-in", {
           state: { userEmail: email, goBackToSignIn: true },

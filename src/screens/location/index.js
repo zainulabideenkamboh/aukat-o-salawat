@@ -92,21 +92,17 @@ function Location() {
   };
 
   const handleSave = async () => {
-    console.log("Selected Item:", selectedItem);
     try {
       const response = await ApiClient.put(
         `api/v1/users/location?lat=${selectedItem.latitude}&lng=${selectedItem.longitude}`
       );
       const data = response.data;
-      console.log("Response is : ", response.data);
-
       if (data.code === 200) {
         handleToasterOpen("success", "Location saved successfully!");
       } else {
         handleToasterOpen("error", "Location failed. Please try again.");
       }
     } catch (error) {
-      console.log("Error fetching namaz timings: ", error);
       handleToasterOpen(
         "error",
         "An error occurred while saving location. Please try again."

@@ -36,8 +36,6 @@ function PlaybackSchedule() {
       };
       try {
         const response = await ApiClient.get("api/v1/reminder/");
-        console.log("response is here bro: ", response);
-
         if (response.status === 200) {
           const audioFiles = response.data.data.map((audio) => ({
             url: `https://tajammulbucket123.s3.ap-northeast-1.amazonaws.com/azan1_9e3492e7-76fe-41fb-a303-24122667e536.mp3`,
@@ -53,12 +51,8 @@ function PlaybackSchedule() {
           // setAudioList(audioFiles);
           setNamazTimings(namazTimingsWithUrl);
           setLoading(false);
-        } else {
-          console.log("Failed to fetch audio list.");
         }
-      } catch (error) {
-        console.log("Error fetching audio list: ", error);
-      }
+      } catch (error) {}
     };
 
     fetchAudioList();

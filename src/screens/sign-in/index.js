@@ -107,9 +107,7 @@ function SignIn() {
         email,
         password,
       });
-      console.log("Response Sign in : ", response.data);
       const { token } = response.data.data;
-      console.log("token : here : ", token);
       localStorage.setItem("token", token);
       if (response.status === 200) {
         localStorage.setItem("userEmail", email);

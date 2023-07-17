@@ -10,22 +10,41 @@ import {
 import Layout from "../../components/Layout";
 import axios from "axios";
 import ApiClient from "../../services/ApiClient";
+import Toaster from "../../components/Toaster";
 
 function FavoriteAudio() {
   const [audioList, setAudioList] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [toasterState, setToasterState] = useState({
+    open: false,
+    type: "",
+    message: "",
+  });
+  const [audioType, setAudioType] = useState("");
+  const [audioName, setAudioName] = useState("");
+  const [count, setCount] = useState(0);
+  const [isChanged, setIsChanged] = useState(false);
+
+  const handleToasterClose = () => {
+    setToasterState({
+      ...toasterState,
+      open: false,
+    });
+  };
+
+  const handleToasterOpen = (type, message) => {
+    setToasterState({
+      open: true,
+      type,
+      message,
+    });
+    setTimeout(handleToasterClose, 3000);
+  };
 
   useEffect(() => {
     const fetchAudioList = async () => {
-      const config = {
-        headers: {
-          Authorization:
-            "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbGlhbW1hcmtoYW5iaXR3QGdtYWlsLmNvbSIsImlhdCI6MTY4ODQ3ODExMiwiZXhwIjoxNjg4NTY0NTEyfQ.MCvkdXsmkP1MyOgTZCEqydj8p1gvPtcGQyOdCthHgP8",
-        },
-      };
       try {
         const response = await ApiClient.get("api/v1/playlist/audio/fav");
-        console.log("response is here: ", response);
 
         if (response.status === 200) {
           const audioFiles = response.data.data.map((audio) => ({
@@ -35,10 +54,10 @@ function FavoriteAudio() {
           setAudioList(audioFiles);
           setLoading(false);
         } else {
-          console.log("Failed to fetch audio list.");
+          handleToasterOpen("error", "Failed to fetch audio list.");
         }
       } catch (error) {
-        console.log("Error fetching audio list: ", error);
+        // handleToasterOpen("error", "Something went wrong.");
       }
     };
 
@@ -48,6 +67,7 @@ function FavoriteAudio() {
   return (
     <Layout>
       <Grid item xs={12} sm={8} md={9}>
+        <Toaster {...toasterState} />
         <Typography variant="h4">Favorite Audio</Typography>
         <Container
           maxWidth="lg"
