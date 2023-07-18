@@ -31,7 +31,7 @@ const Header = ({ isOpen, handleSidebarToggle }) => {
           sx={{
             marginLeft: "20px",
             height: "120px",
-            width: "120px",
+            width: "130px",
             marginTop: "5px",
           }}
         />

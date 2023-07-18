@@ -10,9 +10,9 @@ import IconButton from "@mui/material/IconButton";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
-import ApiClient from "../../services/ApiClient";
 import Toaster from "../../components/Toaster";
 import Layout from "../../components/Layout";
+import axios from "axios";
 
 const Container = styled("form")({
   padding: "32px",
@@ -115,7 +115,7 @@ function ResetPassword() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const response = await ApiClient.put("api/v1/users/reset-password", {
+      const response = await axios.put("api/v1/users/reset-password", {
         email,
         password,
         otp: null,

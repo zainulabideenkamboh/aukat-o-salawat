@@ -6,8 +6,8 @@ import Button from "@mui/material/Button";
 import EmailIcon from "@mui/icons-material/Email";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import { Link, useNavigate } from "react-router-dom";
-import ApiClient from "../../services/ApiClient";
 import Toaster from "../../components/Toaster";
+import axios from "axios";
 
 const Container = styled("form")({
   padding: "32px",
@@ -98,7 +98,7 @@ function ForgetPassword() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const response = await ApiClient.post("api/v1/otp/generate", {
+      const response = await axios.post("api/v1/otp/generate", {
         email,
       });
       if (response.status === 200) {

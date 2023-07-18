@@ -13,8 +13,8 @@ import PersonIcon from "@mui/icons-material/Person";
 import DesktopWindowsIcon from "@mui/icons-material/DesktopWindows";
 import { Link, useNavigate } from "react-router-dom";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
-import ApiClient from "../../services/ApiClient";
 import Toaster from "../../components/Toaster";
+import axios from "axios";
 
 const Container = styled("form")({
   padding: "32px",
@@ -148,7 +148,7 @@ function Signup() {
     };
 
     try {
-      const response = await ApiClient.post("api/v1/auth/signup", payload);
+      const response = await axios.post("api/v1/auth/signup", payload);
       if (response.status === 200) {
         navigate("/code-verification", { state: { userEmail: email } });
       } else {

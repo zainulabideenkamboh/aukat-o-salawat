@@ -13,8 +13,8 @@ import InputAdornment from "@mui/material/InputAdornment";
 import IconButton from "@mui/material/IconButton";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import ApiClient from "../../services/ApiClient";
 import Toaster from "../../components/Toaster";
+import axios from "axios";
 
 const Container = styled("form")({
   padding: "32px",
@@ -103,7 +103,7 @@ function SignIn() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const response = await ApiClient.post("api/v1/auth/authenticate", {
+      const response = await axios.post("api/v1/auth/authenticate", {
         email,
         password,
       });
