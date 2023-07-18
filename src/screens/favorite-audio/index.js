@@ -8,7 +8,6 @@ import {
   CircularProgress,
 } from "@mui/material";
 import Layout from "../../components/Layout";
-import axios from "axios";
 import ApiClient from "../../services/ApiClient";
 import Toaster from "../../components/Toaster";
 

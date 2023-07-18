@@ -14,7 +14,7 @@ import IconButton from "@mui/material/IconButton";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import Toaster from "../../components/Toaster";
-import axios from "axios";
+import UnauthenticatedClient from "../../services/UnauthenticatedClient";
 
 const Container = styled("form")({
   padding: "32px",
@@ -103,10 +103,13 @@ function SignIn() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const response = await axios.post("api/v1/auth/authenticate", {
-        email,
-        password,
-      });
+      const response = await UnauthenticatedClient.post(
+        "api/v1/auth/authenticate",
+        {
+          email,
+          password,
+        }
+      );
       const { token } = response.data.data;
       localStorage.setItem("token", token);
       if (response.status === 200) {

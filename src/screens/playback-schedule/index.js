@@ -18,8 +18,6 @@ import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import PauseIcon from "@mui/icons-material/Pause";
 import ApiClient from "../../services/ApiClient";
 
-import axios from "axios";
-
 function PlaybackSchedule() {
   const [loading, setLoading] = useState(true);
   const [audioList, setAudioList] = useState([]);

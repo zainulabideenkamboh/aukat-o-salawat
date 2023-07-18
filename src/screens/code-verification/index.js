@@ -5,7 +5,7 @@ import Button from "@mui/material/Button";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import Toaster from "../../components/Toaster";
-import axios from "axios";
+import UnauthenticatedClient from "../../services/UnauthenticatedClient";
 
 const Container = styled("form")({
   padding: "32px",
@@ -114,7 +114,7 @@ function CodeVerification() {
     const concatenatedString = code.join("");
     event.preventDefault();
     try {
-      const response = await axios.post("api/v1/otp/validate", {
+      const response = await UnauthenticatedClient.post("api/v1/otp/validate", {
         email,
         otp: concatenatedString,
       });
@@ -132,7 +132,7 @@ function CodeVerification() {
 
   const resendCodeHandler = async () => {
     try {
-      const response = await axios.post("api/v1/otp/generate", {
+      const response = await UnauthenticatedClient.post("api/v1/otp/generate", {
         email,
       });
       if (response.status === 200) {

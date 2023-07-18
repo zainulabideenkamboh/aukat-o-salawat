@@ -18,8 +18,7 @@ import {
 } from "@mui/material";
 import Toaster from "../../components/Toaster";
 import ApiClient from "../../services/ApiClient";
-
-import axios from "axios";
+import UnauthenticatedClient from "../../services/UnauthenticatedClient";
 
 function Location() {
   const [country, setCountry] = useState("");
@@ -60,7 +59,7 @@ function Location() {
   const handleSearch = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(
+      const response = await UnauthenticatedClient.get(
         `https://api.api-ninjas.com/v1/geocoding?city=${city}&country=${country}`,
         {
           headers: {

@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import moment from "moment-timezone";
-import axios from "axios";
 import SignIn from "./screens/sign-in";
 import ForgetPassword from "./screens/forget-password";
 import CodeVerification from "./screens/code-verification";

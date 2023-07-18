@@ -7,7 +7,7 @@ import EmailIcon from "@mui/icons-material/Email";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import { Link, useNavigate } from "react-router-dom";
 import Toaster from "../../components/Toaster";
-import axios from "axios";
+import UnauthenticatedClient from "../../services/UnauthenticatedClient";
 
 const Container = styled("form")({
   padding: "32px",
@@ -98,7 +98,7 @@ function ForgetPassword() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const response = await axios.post("api/v1/otp/generate", {
+      const response = await UnauthenticatedClient.post("api/v1/otp/generate", {
         email,
       });
       if (response.status === 200) {

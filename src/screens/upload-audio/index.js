@@ -10,7 +10,6 @@ import {
 import Layout from "../../components/Layout";
 import ApiClient from "../../services/ApiClient";
 import Toaster from "../../components/Toaster";
-import axios from "axios";
 
 function UploadAudio() {
   const [selectedFile, setSelectedFile] = useState(null);

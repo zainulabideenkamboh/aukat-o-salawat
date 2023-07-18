@@ -12,7 +12,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import Toaster from "../../components/Toaster";
 import Layout from "../../components/Layout";
-import axios from "axios";
+import UnauthenticatedClient from "../../services/UnauthenticatedClient";
 
 const Container = styled("form")({
   padding: "32px",
@@ -115,11 +115,14 @@ function ResetPassword() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const response = await axios.put("api/v1/users/reset-password", {
-        email,
-        password,
-        otp: null,
-      });
+      const response = await UnauthenticatedClient.put(
+        "api/v1/users/reset-password",
+        {
+          email,
+          password,
+          otp: null,
+        }
+      );
       if (response.data.code === 200) {
         navigate(goBackToSignIn ? "/sign-in" : null);
         !goBackToSignIn &&
