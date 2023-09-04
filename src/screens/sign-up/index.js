@@ -143,7 +143,7 @@ function Signup() {
       firstName,
       lastName,
       email,
-      serialNumber,
+      // serialNumber,
       password,
     };
 
@@ -193,9 +193,10 @@ function Signup() {
       email.trim() !== "" &&
       password.trim() !== "" &&
       confirmPassword === password &&
-      isValidPassword(password) &&
-      isValidSerialNumber(serialNumber) &&
-      serialNumber.trim() !== ""
+      isValidPassword(password)
+      //  &&
+      // isValidSerialNumber(serialNumber) &&
+      // serialNumber.trim() !== ""
     );
   };
 
@@ -268,7 +269,7 @@ function Signup() {
               helperText={!isValidEmail(email) && "Invalid email address"}
             />
           </Grid>
-          <Grid item xs={12}>
+          {/* <Grid item xs={12}>
             <StyledTextField
               required
               label="Serial Number"
@@ -287,7 +288,7 @@ function Signup() {
                 !isValidSerialNumber(serialNumber) && "Invalid serial number"
               }
             />
-          </Grid>
+          </Grid> */}
           <Grid item xs={12}>
             <StyledTextField
               required

@@ -86,18 +86,18 @@ const Sidebar = ({ isOpen }) => {
               </ListItemIcon>
               <ListItemText primary="Uploaded Audio" />
             </ListItem>
-            <ListItem button component={Link} to="/audio-list">
+            {/* <ListItem button component={Link} to="/audio-list">
               <ListItemIcon>
                 <MusicNoteIcon />
               </ListItemIcon>
               <ListItemText primary="Audio List" />
-            </ListItem>
-            <ListItem button component={Link} to="/favorite-audio">
+            </ListItem> */}
+            {/* <ListItem button component={Link} to="/favorite-audio">
               <ListItemIcon>
                 <FavoriteIcon />
               </ListItemIcon>
               <ListItemText primary="Favorite Audio" />
-            </ListItem>
+            </ListItem> */}
           </List>
         </Collapse>
         {/* End Audio */}

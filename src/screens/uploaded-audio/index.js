@@ -6,10 +6,29 @@ import {
   Grid,
   Typography,
   CircularProgress,
+  Button,
 } from "@mui/material";
 import Layout from "../../components/Layout";
 import ApiClient from "../../services/ApiClient";
 import Toaster from "../../components/Toaster";
+
+function AudioCard({ audio, handleTogglePlaylist }) {
+  return (
+    <Card sx={{ height: "100%" }}>
+      <CardContent>
+        <audio src={audio.url} controls style={{ width: "100%" }} />
+        <Typography variant="h6">{audio.name}</Typography>
+        <Button
+          variant="contained"
+          onClick={() => handleTogglePlaylist(audio)}
+          sx={{ marginTop: 2 }}
+        >
+          {audio.inPlaylist ? "Remove from Playlist" : "Add to Playlist"}
+        </Button>
+      </CardContent>
+    </Card>
+  );
+}
 
 function UploadedAudio() {
   const [audioList, setAudioList] = useState([]);
@@ -36,6 +55,22 @@ function UploadedAudio() {
     setTimeout(handleToasterClose, 3000);
   };
 
+  const handleTogglePlaylist = async (audio) => {
+    const response = await ApiClient.post(
+      `api/v1/playlist/audio/toggle/${audio.id}`
+    );
+    if (response.status === 200) {
+      if (audio.inPlaylist) {
+        handleToasterOpen(
+          "success",
+          "Audio has been removed from the playlist"
+        );
+      } else {
+        handleToasterOpen("success", "Audio has been added to the playlist");
+      }
+    }
+  };
+
   useEffect(() => {
     const fetchAudioList = async () => {
       try {
@@ -43,8 +78,10 @@ function UploadedAudio() {
 
         if (response.status === 200) {
           const audioFiles = response.data.data.audios.map((audio) => ({
+            id: audio.id,
             name: audio.name.split("_")[0], // Extract the part before the underscore
             url: audio.url,
+            inPlaylist: audio.isPlaylist,
           }));
           setAudioList(audioFiles);
           setLoading(false);
@@ -57,7 +94,7 @@ function UploadedAudio() {
     };
 
     fetchAudioList();
-  }, []);
+  }, [handleTogglePlaylist]);
 
   return (
     <Layout>
@@ -87,16 +124,10 @@ function UploadedAudio() {
             <Grid container spacing={2}>
               {audioList.map((audio) => (
                 <Grid item xs={12} sm={6} md={4} lg={4} key={audio.name}>
-                  <Card sx={{ height: "100%" }}>
-                    <CardContent>
-                      <audio
-                        src={audio.url}
-                        controls
-                        style={{ width: "100%" }}
-                      />
-                      <Typography variant="h6">{audio.name}</Typography>
-                    </CardContent>
-                  </Card>
+                  <AudioCard
+                    audio={audio}
+                    handleTogglePlaylist={handleTogglePlaylist}
+                  />
                 </Grid>
               ))}
             </Grid>

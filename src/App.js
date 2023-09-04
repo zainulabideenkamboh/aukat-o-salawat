@@ -14,7 +14,7 @@ import UploadedAudio from "./screens/uploaded-audio";
 import FavoriteAudio from "./screens/favorite-audio";
 import GenerateCode from "./screens/generate-code";
 import Configuration from "./screens/configuration";
-import NamazTiming from "./screens/namaz-timing";
+import AudioTiming from "./screens/audio-timing";
 import NamazMethod from "./screens/namaz-method";
 import Location from "./screens/location";
 import PrivateRoute from "./private-route";
@@ -72,7 +72,7 @@ function App() {
         />
         <Route
           path="/namaz-timing"
-          element={<PrivateRoute element={NamazTiming} />}
+          element={<PrivateRoute element={AudioTiming} />}
         />
         <Route
           path="/namaz-method"

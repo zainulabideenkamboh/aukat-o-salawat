@@ -6,6 +6,7 @@ import {
   Container,
   Grid,
   Typography,
+  TextField,
 } from "@mui/material";
 import Layout from "../../components/Layout";
 import ApiClient from "../../services/ApiClient";
@@ -14,6 +15,7 @@ import Toaster from "../../components/Toaster";
 function UploadAudio() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
+  const [audioName, setAudioName] = useState("");
   const [toasterState, setToasterState] = useState({
     open: false,
     type: "",
@@ -25,6 +27,10 @@ function UploadAudio() {
       ...toasterState,
       open: false,
     });
+  };
+
+  const handleAudioNameChange = (event) => {
+    setAudioName(event.target.value);
   };
 
   const handleToasterOpen = (type, message) => {
@@ -43,20 +49,16 @@ function UploadAudio() {
   };
 
   const handleUploadClick = async () => {
-    if (selectedFile) {
+    if (selectedFile && audioName) {
       try {
         const formData = new FormData();
         formData.append("file", selectedFile);
+        // formData.append("audioName", audioName);
 
-        const config = {
-          headers: {
-            Authorization:
-              "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbGlhbW1hcmtoYW5iaXR3QGdtYWlsLmNvbSIsImlhdCI6MTY4ODQ3ODExMiwiZXhwIjoxNjg4NTY0NTEyfQ.MCvkdXsmkP1MyOgTZCEqydj8p1gvPtcGQyOdCthHgP8",
-          },
-        };
-
-        const response = await ApiClient.post("api/v1/playlist/save", formData);
-
+        const response = await ApiClient.post("api/v1/playlist/save", {
+          formData,
+          name: audioName,
+        });
         if (response.status === 200) {
           handleToasterOpen("success", "File uploaded successfully!");
         } else {
@@ -114,12 +116,22 @@ function UploadAudio() {
                   )}
                 </Grid>
                 <Grid item xs={12}>
+                  <TextField
+                    label="Audio Name"
+                    variant="outlined"
+                    fullWidth
+                    value={audioName}
+                    onChange={handleAudioNameChange}
+                    required
+                  />
+                </Grid>
+                <Grid item xs={12}>
                   <Button
                     variant="contained"
                     color="primary"
                     fullWidth
                     onClick={handleUploadClick}
-                    disabled={!selectedFile}
+                    disabled={!selectedFile || !audioName}
                   >
                     Upload
                   </Button>
