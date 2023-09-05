@@ -360,7 +360,7 @@ const NamazTimings = () => {
         audioUrl: audioUrl, //
         reminderType: "namaz", //
         // timeZone: location?.timezone,
-        timeZone: "2023-05-20",
+        // timeZone: "2023-05-20",
         after: null,
       };
       console.log("payload : ", payload);

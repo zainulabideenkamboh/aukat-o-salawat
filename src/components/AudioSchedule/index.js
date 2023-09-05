@@ -463,9 +463,9 @@ function AudioSchedule() {
                                       const updatedObject = {
                                         ...row,
                                         time: formattedTime,
-                                        namaz: "Maghrib",
+                                        namaz: "",
                                         type: "local",
-                                        timeZone: "2023-05-20",
+                                        // timeZone: "2023-05-20",
                                         after: selectedValue,
                                       };
                                       delete updatedObject.duration;

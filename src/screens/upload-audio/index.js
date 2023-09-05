@@ -11,6 +11,7 @@ import {
 import Layout from "../../components/Layout";
 import ApiClient from "../../services/ApiClient";
 import Toaster from "../../components/Toaster";
+import axios from "axios";
 
 function UploadAudio() {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -49,16 +50,28 @@ function UploadAudio() {
   };
 
   const handleUploadClick = async () => {
+    console.log("selectedFile : ", selectedFile);
     if (selectedFile && audioName) {
       try {
         const formData = new FormData();
-        formData.append("file", selectedFile);
-        // formData.append("audioName", audioName);
+        // formData.append("file", selectedFile);
+        // // formData.append("audioName", audioName);
+        // const response = await ApiClient.post("api/v1/playlist/save", formData);
 
-        const response = await ApiClient.post("api/v1/playlist/save", {
+        formData.append("file", selectedFile);
+        const token = localStorage.getItem("token");
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+
+        const response = await axios.post(
+          "https://awkat-al-salat.ue.r.appspot.com/api/v1/playlist/save",
           formData,
-          name: audioName,
-        });
+          config
+        );
+
         if (response.status === 200) {
           handleToasterOpen("success", "File uploaded successfully!");
         } else {
