@@ -67,7 +67,7 @@ function UploadAudio() {
         };
 
         const response = await axios.post(
-          "https://awkat-al-salat.ue.r.appspot.com/api/v1/playlist/save",
+          "https://api-dot-awkat-al-salat.ue.r.appspot.com/api/v1/playlist/save",
           formData,
           config
         );
