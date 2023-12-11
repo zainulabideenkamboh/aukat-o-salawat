@@ -18,6 +18,7 @@ import AudioTiming from "./screens/audio-timing";
 import NamazMethod from "./screens/namaz-method";
 import Location from "./screens/location";
 import PrivateRoute from "./private-route";
+import PurchaseDevice from "./screens/purchase-device";
 
 function App() {
   useEffect(() => {
@@ -77,6 +78,10 @@ function App() {
         <Route
           path="/namaz-method"
           element={<PrivateRoute element={NamazMethod} />}
+        />
+        <Route
+          path="/purchase-device"
+          element={<PrivateRoute element={PurchaseDevice} />}
         />
         <Route path="/location" element={<PrivateRoute element={Location} />} />
         <Route path="/*" element={<SignIn />} />

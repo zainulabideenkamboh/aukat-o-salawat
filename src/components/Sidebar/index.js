@@ -10,6 +10,7 @@ import {
 import { Link } from "react-router-dom";
 
 import MosqueIcon from "@mui/icons-material/Mosque";
+import RouterIcon from "@mui/icons-material/Router";
 import {
   ExpandLess as ExpandLessIcon,
   ExpandMore as ExpandMoreIcon,
@@ -151,6 +152,12 @@ const Sidebar = ({ isOpen }) => {
             </ListItem>
           </List>
         </Collapse>
+        <ListItem button component={Link} to="/purchase-device">
+          <ListItemIcon>
+            <RouterIcon />
+          </ListItemIcon>
+          <ListItemText primary="Buy Device" />
+        </ListItem>
 
         <ListItem button component={Link} to="/sign-in">
           <ListItemIcon>
